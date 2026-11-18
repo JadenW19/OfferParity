@@ -12,7 +12,7 @@ export interface ParsedHtmlMetadata {
   inStock: boolean | null;
   variants: StorefrontVariant[];
   promoVerification: PromoVerification | null;
-  source: "json_ld" | "opengraph" | "http_only";
+  source: "json_ld" | "microdata" | "opengraph" | "http_only";
 }
 
 type JsonRecord = Record<string, unknown>;
@@ -483,9 +483,107 @@ function detectOnPagePromo(
   };
 }
 
+function extractProductFromMicrodata($: cheerio.CheerioAPI): {
+  title: string | null;
+  basePrice: number | null;
+  compareAtPrice: number | null;
+  currency: string | null;
+  inStock: boolean | null;
+  variants: StorefrontVariant[];
+  found: boolean;
+} {
+  const productEl = $(
+    '[itemtype*="schema.org/Product" i], [itemtype*="schema.org/ProductGroup" i]'
+  ).first();
+
+  if (productEl.length === 0) {
+    return {
+      title: null,
+      basePrice: null,
+      compareAtPrice: null,
+      currency: null,
+      inStock: null,
+      variants: [],
+      found: false,
+    };
+  }
+
+  const readItemprop = (
+    scope: ReturnType<cheerio.CheerioAPI>,
+    prop: string
+  ): string | null => {
+    const el = scope.find(`[itemprop="${prop}"]`).first();
+    if (el.length === 0) return null;
+    const raw =
+      el.attr("content") ??
+      el.attr("href") ??
+      el.attr("value") ??
+      el.text();
+    const trimmed = raw?.trim();
+    return trimmed ? trimmed : null;
+  };
+
+  const title = readItemprop(productEl, "name");
+  const offerEls = productEl.find(
+    '[itemprop="offers"], [itemtype*="schema.org/Offer" i]'
+  );
+
+  const variants: StorefrontVariant[] = [];
+  let basePrice: number | null = null;
+  let currency: string | null = null;
+  const availabilities: boolean[] = [];
+
+  if (offerEls.length > 0) {
+    offerEls.each((idx, el) => {
+      const offerScope = $(el);
+      const p = parseNumericPrice(readItemprop(offerScope, "price"));
+      const c = normalizeCurrency(readItemprop(offerScope, "priceCurrency"));
+      const a = parseAvailability(readItemprop(offerScope, "availability"));
+      const name = readItemprop(offerScope, "name");
+      const sku = readItemprop(offerScope, "sku");
+
+      if (basePrice === null && p !== null) basePrice = p;
+      if (currency === null && c !== null) currency = c;
+      if (a !== null) availabilities.push(a);
+
+      if ((offerEls.length > 1 || name !== null || sku !== null) && p !== null) {
+        variants.push({
+          id: sku ?? `microdata-offer-${idx + 1}`,
+          title: name ?? title ?? `Option ${idx + 1}`,
+          price: p,
+          compareAtPrice: null,
+          available: a ?? true,
+          sku,
+        });
+      }
+    });
+  } else {
+    basePrice = parseNumericPrice(readItemprop(productEl, "price"));
+    currency = normalizeCurrency(readItemprop(productEl, "priceCurrency"));
+    const directAvail = parseAvailability(readItemprop(productEl, "availability"));
+    if (directAvail !== null) availabilities.push(directAvail);
+  }
+
+  const inStock =
+    availabilities.length > 0 ? availabilities.some(Boolean) : null;
+
+  const found =
+    title !== null || basePrice !== null || inStock !== null || variants.length > 0;
+
+  return {
+    title,
+    basePrice,
+    compareAtPrice: null,
+    currency,
+    inStock,
+    variants,
+    found,
+  };
+}
+
 /**
  * Parse product metadata, pricing, availability, and promo banners from HTML
- * using Schema.org JSON-LD first, then OpenGraph/meta tag fallbacks.
+ * using Schema.org JSON-LD first, then Microdata, then OpenGraph/meta tag fallbacks.
  */
 export function parseHtmlStorefrontMetadata(
   html: string,
@@ -508,6 +606,7 @@ export function parseHtmlStorefrontMetadata(
   });
 
   const jsonLd = extractProductFromJsonLd(allJsonLdNodes);
+  const microdata = jsonLd.found ? null : extractProductFromMicrodata($);
 
   // OpenGraph & standard meta extraction
   const ogTitle =
@@ -544,17 +643,23 @@ export function parseHtmlStorefrontMetadata(
 
   const source: ParsedHtmlMetadata["source"] = jsonLd.found
     ? "json_ld"
-    : hasOgProductSignal
-      ? "opengraph"
-      : "http_only";
+    : microdata?.found
+      ? "microdata"
+      : hasOgProductSignal
+        ? "opengraph"
+        : "http_only";
 
   return {
-    title: jsonLd.title ?? ogTitle,
-    basePrice: jsonLd.basePrice ?? ogPrice,
-    compareAtPrice: jsonLd.compareAtPrice ?? ogCompareAt,
-    currency: jsonLd.currency ?? ogCurrency,
-    inStock: jsonLd.inStock ?? ogStock,
-    variants: jsonLd.variants,
+    title: jsonLd.title ?? microdata?.title ?? ogTitle,
+    basePrice: jsonLd.basePrice ?? microdata?.basePrice ?? ogPrice,
+    compareAtPrice:
+      jsonLd.compareAtPrice ?? microdata?.compareAtPrice ?? ogCompareAt,
+    currency: jsonLd.currency ?? microdata?.currency ?? ogCurrency,
+    inStock: jsonLd.inStock ?? microdata?.inStock ?? ogStock,
+    variants:
+      jsonLd.variants.length > 0
+        ? jsonLd.variants
+        : (microdata?.variants ?? []),
     promoVerification: detectOnPagePromo($, promoCode),
     source,
   };

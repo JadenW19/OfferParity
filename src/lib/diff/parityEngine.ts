@@ -60,14 +60,28 @@ function tokenizeVariantText(text: string): string[] {
 }
 
 /**
- * Matches an advertised hero variant name (e.g. "Alpine Olive (Size L)")
- * against storefront variants (e.g. "Alpine Olive / L") using normalized tokens.
+ * Matches an advertised hero variant by exact numeric/string ID first (`?variant=4419283712`),
+ * then falls back to normalized token matching on variant title/options.
  */
 function matchHeroVariant(
-  variantName: string | null,
+  claims: Pick<ExtractedAdClaims, "variantId" | "variantName">,
   variants: StorefrontVariant[]
 ): StorefrontVariant | null {
-  if (!variantName || variants.length === 0) {
+  if (variants.length === 0) {
+    return null;
+  }
+
+  if (claims.variantId) {
+    const exactIdMatch = variants.find(
+      (variant) => variant.id.trim() === claims.variantId?.trim()
+    );
+    if (exactIdMatch) {
+      return exactIdMatch;
+    }
+  }
+
+  const variantName = claims.variantName;
+  if (!variantName) {
     return null;
   }
 
@@ -371,8 +385,13 @@ function evaluateVariantStock(
   storefront: StorefrontSnapshot,
   matchedVariant: StorefrontVariant | null
 ): ParityCheck {
-  const expectedStr = claims.variantName
-    ? `Hero variant "${claims.variantName}" in stock`
+  const claimedVariantDesc = claims.variantName
+    ? `"${claims.variantName}"${claims.variantId ? ` (ID ${claims.variantId})` : ""}`
+    : claims.variantId
+      ? `ID ${claims.variantId}`
+      : null;
+  const expectedStr = claimedVariantDesc
+    ? `Hero variant ${claimedVariantDesc} in stock`
     : "Product in stock";
 
   if (storefront.wafStatus === "WAF_CHALLENGE_MANUAL_CHECK") {
@@ -402,7 +421,7 @@ function evaluateVariantStock(
     };
   }
 
-  if (claims.variantName !== null) {
+  if (claimedVariantDesc !== null) {
     if (storefront.variants.length > 0) {
       if (matchedVariant) {
         if (!matchedVariant.available) {
@@ -433,10 +452,10 @@ function evaluateVariantStock(
         label: "Variant & Inventory Availability",
         status: "WARN",
         expected: expectedStr,
-        actual: `No storefront variant matched "${claims.variantName}" (${storefront.variants.length} variants checked)`,
+        actual: `No storefront variant matched ${claimedVariantDesc} (${storefront.variants.length} variants checked)`,
         impactWeight: 0.2,
         remediation:
-          "Confirm the advertised color/size exists on the landing page and links to the exact ?variant= parameter.",
+          "Confirm the advertised color/size or ?variant= ID exists on the landing page.",
       };
     }
 
@@ -447,8 +466,8 @@ function evaluateVariantStock(
       expected: expectedStr,
       actual:
         storefront.inStock === true
-          ? `Product is in stock, but variant-level data for "${claims.variantName}" is unavailable`
-          : `Inventory metadata unavailable for "${claims.variantName}"`,
+          ? `Product is in stock, but variant-level data for ${claimedVariantDesc} is unavailable`
+          : `Inventory metadata unavailable for ${claimedVariantDesc}`,
       impactWeight: 0.1,
       remediation:
         "Verify variant-level availability on the live product page (non-Shopify metadata lacks variant matrix).",
@@ -716,7 +735,7 @@ export function evaluateParity(
   claims: ExtractedAdClaims,
   storefront: StorefrontSnapshot
 ): { checks: ParityCheck[]; overallStatus: OverallVerdict } {
-  const matchedVariant = matchHeroVariant(claims.variantName, storefront.variants);
+  const matchedVariant = matchHeroVariant(claims, storefront.variants);
 
   const checks: ParityCheck[] = [
     evaluateHttpHealth(storefront),

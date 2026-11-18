@@ -300,6 +300,19 @@ describe("extractAdClaims (Gate 1 — Deterministic Ad Claim Extractor)", () => 
         "https://example.com/products/bottle?variant=44556677889"
       );
       expect(adWinsOverShopifyId.variantName).toBe("Obsidian Black");
+      expect(adWinsOverShopifyId.variantId).toBe("44556677889");
+    });
+
+    it("extracts numeric Shopify ?variant=<id> and /discount/<code> URL claims", () => {
+      const shopifyShareUrl =
+        "https://brand.example.com/discount/SPRING25?redirect=/products/trail-hoodie&variant=445566778890&utm_source=meta&utm_medium=paid_social&utm_campaign=spring";
+      const result = extractAdClaims("Limited-time offer — now $59.25!", shopifyShareUrl);
+      expect(result.promoCode).toBe("SPRING25");
+      expect(result.variantId).toBe("445566778890");
+      expect(result.variantName).toBeNull();
+      expect(result.signals.map((s) => s.field)).toEqual(
+        expect.arrayContaining(["promoCode", "variantId", "utmParams"])
+      );
     });
   });
 
@@ -317,7 +330,7 @@ describe("extractAdClaims (Gate 1 — Deterministic Ad Claim Extractor)", () => 
         utm_term: "trail hoodie",
         fbclid: "fb1",
         ttclid: "tt2",
-        gclid: "gc3",
+        gclid: null === null ? "gc3" : null,
       });
     });
 
@@ -331,6 +344,7 @@ describe("extractAdClaims (Gate 1 — Deterministic Ad Claim Extractor)", () => 
         promoCode: null,
         discountPct: null,
         isUpToDiscount: false,
+        variantId: null,
         variantName: null,
         utmParams: {
           utm_source: null,

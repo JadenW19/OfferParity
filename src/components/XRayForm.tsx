@@ -11,13 +11,11 @@ interface XRayFormProps {
   landingPageUrl: string;
   dailyBudget: string;
   activeFixtureId: FixtureScenarioId | null;
-  useGeminiFallback: boolean;
   isLoading: boolean;
   serverError: string | null;
   onAdCopyChange: (value: string) => void;
   onLandingPageUrlChange: (value: string) => void;
   onDailyBudgetChange: (value: string) => void;
-  onUseGeminiFallbackChange: (value: boolean) => void;
   onSubmit: () => void;
 }
 
@@ -61,13 +59,11 @@ export function XRayForm({
   landingPageUrl,
   dailyBudget,
   activeFixtureId,
-  useGeminiFallback,
   isLoading,
   serverError,
   onAdCopyChange,
   onLandingPageUrlChange,
   onDailyBudgetChange,
-  onUseGeminiFallbackChange,
   onSubmit,
 }: XRayFormProps) {
   const fieldErrors = validateFields(adCopy, landingPageUrl, dailyBudget);
@@ -219,20 +215,9 @@ export function XRayForm({
         ) : null}
 
         <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-          <div className="space-y-1.5">
-            <label className="inline-flex cursor-pointer items-center gap-2 text-xs text-slate-300">
-              <input
-                type="checkbox"
-                checked={useGeminiFallback}
-                onChange={(e) => onUseGeminiFallbackChange(e.target.checked)}
-                className="h-3.5 w-3.5 rounded border-slate-600 bg-slate-950 text-violet-400 focus:ring-violet-400/40"
-              />
-              <span>Use Gemini fallback only for unresolved ad-copy claims (optional)</span>
-            </label>
-            <p className="text-xs text-slate-400">
-              SSRF-protected server verification · 8s hard timeout · zero ad-account write permissions
-            </p>
-          </div>
+          <p className="text-xs text-slate-400">
+            100% deterministic audit · SSRF-protected server verification · 8s hard timeout
+          </p>
           <button
             type="submit"
             disabled={isLoading || hasValidationErrors}

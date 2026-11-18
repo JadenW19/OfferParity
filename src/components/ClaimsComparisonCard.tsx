@@ -75,7 +75,12 @@ export function ClaimsComparisonCard({
             <div className="col-span-2">
               <dt className="text-slate-400">Hero Variant Claim</dt>
               <dd className="mt-0.5 font-semibold text-slate-100">
-                {extractedClaims.variantName ?? "No specific variant claimed"}
+                {extractedClaims.variantName && extractedClaims.variantId
+                  ? `${extractedClaims.variantName} (Variant ID #${extractedClaims.variantId})`
+                  : extractedClaims.variantName ??
+                    (extractedClaims.variantId
+                      ? `Variant ID #${extractedClaims.variantId}`
+                      : "No specific variant claimed")}
               </dd>
             </div>
             <div className="col-span-2">

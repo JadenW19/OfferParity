@@ -33,7 +33,6 @@ export const XRayRequestSchema = z.object({
     .min(0, "Daily budget cannot be negative")
     .max(1_000_000, "Daily budget cannot exceed $1,000,000"),
   fixtureId: FixtureScenarioIdSchema.optional(),
-  useGeminiFallback: z.boolean().optional(),
 });
 export type XRayRequest = z.infer<typeof XRayRequestSchema>;
 
@@ -78,6 +77,7 @@ export const ClaimSignalFieldSchema = z.enum([
   "currency",
   "promoCode",
   "discountPct",
+  "variantId",
   "variantName",
   "utmParams",
 ]);
@@ -102,6 +102,7 @@ export const ExtractedAdClaimsSchema = z.object({
   promoCode: z.string().nullable(),
   discountPct: z.number().nullable(),
   isUpToDiscount: z.boolean(),
+  variantId: z.string().nullable().optional(),
   variantName: z.string().nullable(),
   utmParams: UtmParamsSchema,
   signals: z.array(ClaimSignalSchema),
@@ -159,6 +160,7 @@ export const StorefrontSourceSchema = z.enum([
   "fixture",
   "shopify_js",
   "json_ld",
+  "microdata",
   "opengraph",
   "http_only",
 ]);
@@ -277,27 +279,81 @@ export const DemoScenarioPresetSchema = z.object({
 export type DemoScenarioPreset = z.infer<typeof DemoScenarioPresetSchema>;
 
 /**
- * Structured claim patch returned by optional Gemini fallback extraction.
+ * Batch campaign CSV pre-flight audit contracts (POST /api/xray/batch).
  */
-export const GeminiClaimFallbackSchema = z.object({
-  advertisedPrice: z.number().nullable().optional(),
-  compareAtPrice: z.number().nullable().optional(),
-  currency: z.string().nullable().optional(),
-  promoCode: z.string().nullable().optional(),
-  discountPct: z.number().nullable().optional(),
-  variantName: z.string().nullable().optional(),
-});
-export type GeminiClaimFallback = z.infer<typeof GeminiClaimFallbackSchema>;
+export const MAX_BATCH_ITEMS = 25;
 
-/**
- * Incoming request payload for POST /api/gemini remote querying.
- */
-export const GeminiQueryRequestSchema = z.object({
-  prompt: z
+export const BatchXRayItemInputSchema = XRayRequestSchema.extend({
+  adName: z
     .string()
     .trim()
-    .min(3, "Enter a question of at least 3 characters")
-    .max(2000, "Question must be 2,000 characters or fewer"),
-  report: XRayReportSchema.optional(),
+    .min(1, "Ad name cannot be empty")
+    .max(160, "Ad name must be 160 characters or fewer")
+    .optional(),
 });
-export type GeminiQueryRequest = z.infer<typeof GeminiQueryRequestSchema>;
+export type BatchXRayItemInput = z.infer<typeof BatchXRayItemInputSchema>;
+
+export const BatchXRayRequestSchema = z.object({
+  items: z
+    .array(BatchXRayItemInputSchema)
+    .min(1, "Provide at least 1 ad row to audit")
+    .max(MAX_BATCH_ITEMS, `Batch audits are capped at ${MAX_BATCH_ITEMS} rows per run`),
+});
+export type BatchXRayRequest = z.infer<typeof BatchXRayRequestSchema>;
+
+export const BatchXRayItemResultSchema = z.object({
+  index: z.number().int().nonnegative(),
+  adName: z.string(),
+  ok: z.boolean(),
+  report: XRayReportSchema.nullable(),
+  error: z.string().nullable(),
+  errorCode: z.string().nullable(),
+});
+export type BatchXRayItemResult = z.infer<typeof BatchXRayItemResultSchema>;
+
+export const BatchXRaySummarySchema = z.object({
+  totalRows: z.number().int().nonnegative(),
+  succeededCount: z.number().int().nonnegative(),
+  errorCount: z.number().int().nonnegative(),
+  passCount: z.number().int().nonnegative(),
+  warnCount: z.number().int().nonnegative(),
+  failCount: z.number().int().nonnegative(),
+  wafCount: z.number().int().nonnegative(),
+  totalDailyBudget: z.number().nonnegative(),
+  totalDailyWaste: z.number().nonnegative(),
+  totalMonthlyWaste: z.number().nonnegative(),
+  totalAtRiskDailySpend: z.number().nonnegative(),
+});
+export type BatchXRaySummary = z.infer<typeof BatchXRaySummarySchema>;
+
+export const BatchXRayResponseSchema = z.object({
+  summary: BatchXRaySummarySchema,
+  results: z.array(BatchXRayItemResultSchema),
+  slackDigest: z.string(),
+  generatedAt: z.string(),
+  durationMs: z.number().nonnegative(),
+});
+export type BatchXRayResponse = z.infer<typeof BatchXRayResponseSchema>;
+
+/**
+ * Outbound Slack Incoming Webhook payload validation (POST /api/alerts/slack).
+ */
+export const SLACK_WEBHOOK_PREFIX = "https://hooks.slack.com/services/";
+
+export const SlackWebhookRequestSchema = z.object({
+  text: z
+    .string()
+    .trim()
+    .min(5, "Alert message text is required")
+    .max(12000, "Alert message text is too long"),
+  webhookUrl: z
+    .string()
+    .trim()
+    .url("Enter a valid Slack Incoming Webhook URL")
+    .refine(
+      (u) => u.startsWith(SLACK_WEBHOOK_PREFIX),
+      `Slack webhook URL must start with ${SLACK_WEBHOOK_PREFIX}`
+    )
+    .optional(),
+});
+export type SlackWebhookRequest = z.infer<typeof SlackWebhookRequestSchema>;

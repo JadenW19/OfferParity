@@ -1,24 +1,45 @@
 import { NextResponse } from "next/server";
-import { enrichClaimsWithGeminiFallback } from "@/lib/ai/geminiClient";
-import { evaluateParity } from "@/lib/diff/parityEngine";
-import { calculateWaste } from "@/lib/diff/wasteCalculator";
-import { buildMarkdownReport, buildSlackAlert } from "@/lib/exporters/reportFormatters";
-import { extractAdClaims } from "@/lib/parser/adClaimExtractor";
-import { XRayReportSchema, XRayRequestSchema } from "@/lib/schemas";
+import { XRayRequestSchema } from "@/lib/schemas";
+import {
+  checkRateLimit,
+  getClientIp,
+  getConfiguredSingleRpm,
+} from "@/lib/security/rateLimiter";
 import { SsrfBlockedError } from "@/lib/verifier/ssrfGuard";
-import { verifyStorefront } from "@/lib/verifier/storefrontVerifier";
+import { runSingleXRay } from "@/lib/xrayRunner";
 
 const NO_STORE_HEADERS = {
   "Cache-Control": "no-store",
 } as const;
 
 export async function POST(req: Request): Promise<Response> {
-  const startedAt = performance.now();
+  const ip = getClientIp(req);
+  const limit = checkRateLimit(`xray:${ip}`, getConfiguredSingleRpm());
+  if (!limit.allowed) {
+    return NextResponse.json(
+      {
+        error: `Rate limit exceeded (${limit.limit} requests/min). Retry in ${limit.retryAfterSeconds}s.`,
+        code: "RATE_LIMITED",
+      },
+      {
+        status: 429,
+        headers: {
+          ...NO_STORE_HEADERS,
+          "Retry-After": String(limit.retryAfterSeconds),
+          "X-RateLimit-Remaining": "0",
+        },
+      }
+    );
+  }
 
   let rawBody: unknown;
   try {
     rawBody = await req.json();
-  } catch {
+  } catch (parseErr) {
+    console.warn(
+      "[OfferParity] Malformed JSON on POST /api/xray:",
+      parseErr instanceof Error ? parseErr.message : "invalid json"
+    );
     return NextResponse.json(
       {
         error: "Malformed JSON request body",
@@ -43,61 +64,14 @@ export async function POST(req: Request): Promise<Response> {
     );
   }
 
-  const request = parsedRequest.data;
-
   try {
-    let extractedClaims = extractAdClaims(request.adCopy, request.landingPageUrl);
-
-    if (request.useGeminiFallback) {
-      try {
-        const enriched = await enrichClaimsWithGeminiFallback(
-          extractedClaims,
-          request.adCopy,
-          request.landingPageUrl
-        );
-        extractedClaims = enriched.claims;
-      } catch (fallbackErr) {
-        const reason =
-          fallbackErr instanceof Error ? fallbackErr.message : "Gemini fallback unavailable";
-        console.warn("[OfferParity] Optional Gemini fallback failed:", reason);
-        // Preserve deterministic extraction when optional Gemini fallback fails.
-      }
-    }
-
-    const storefront = await verifyStorefront({
-      landingPageUrl: request.landingPageUrl,
-      fixtureId: request.fixtureId,
-      promoCode: extractedClaims.promoCode,
-    });
-
-    const { checks, overallStatus } = evaluateParity(extractedClaims, storefront);
-    const waste = calculateWaste(checks, request.dailyBudget, overallStatus);
-    const generatedAt = new Date().toISOString();
-    const durationMs = Math.max(0, Math.round((performance.now() - startedAt) * 100) / 100);
-
-    const reportBase = {
-      request,
-      extractedClaims,
-      storefront,
-      checks,
-      overallStatus,
-      waste,
-      generatedAt,
-      durationMs,
-    };
-
-    const slackAlert = buildSlackAlert(reportBase);
-    const markdownReport = buildMarkdownReport(reportBase);
-
-    const report = XRayReportSchema.parse({
-      ...reportBase,
-      slackAlert,
-      markdownReport,
-    });
-
+    const report = await runSingleXRay(parsedRequest.data);
     return NextResponse.json(report, {
       status: 200,
-      headers: NO_STORE_HEADERS,
+      headers: {
+        ...NO_STORE_HEADERS,
+        "X-RateLimit-Remaining": String(limit.remaining),
+      },
     });
   } catch (err) {
     if (err instanceof SsrfBlockedError) {
@@ -111,6 +85,10 @@ export async function POST(req: Request): Promise<Response> {
       );
     }
 
+    console.error(
+      "[OfferParity] Unexpected error in POST /api/xray:",
+      err instanceof Error ? err.message : "unknown error"
+    );
     return NextResponse.json(
       {
         error: "Unexpected error while running OfferParity X-Ray",

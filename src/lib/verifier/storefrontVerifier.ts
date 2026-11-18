@@ -501,9 +501,10 @@ export async function verifyStorefront(
 
     const htmlMetadata = parseHtmlStorefrontMetadata(bodyText, input.promoCode);
     const finalUrlObj = new URL(currentUrl);
-    const productPathMatch = /\/products\/([^/?#]+?)(?:\.js)?\/?$/i.exec(
-      finalUrlObj.pathname
-    );
+    const redirectTargetParam = finalUrlObj.searchParams.get("redirect") ?? "";
+    const productPathMatch =
+      /\/products\/([^/?#]+?)(?:\.js)?\/?$/i.exec(finalUrlObj.pathname) ??
+      /\/products\/([^/?#]+?)(?:\.js)?\/?(?:\?|$)/i.exec(redirectTargetParam);
 
     // If URL itself already returned Shopify .js JSON directly
     const contentType = (

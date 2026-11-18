@@ -583,11 +583,52 @@ function getParamNormalized(params: URLSearchParams, key: string): string | null
   return null;
 }
 
+function extractPromoFromUrl(parsedUrl: URL | null): {
+  promoCode: string | null;
+  signal: ClaimSignal | null;
+} {
+  if (!parsedUrl) return { promoCode: null, signal: null };
+
+  const discountPathMatch = /\/discount\/([A-Za-z0-9_-]{3,20})(?:\/|$)/i.exec(
+    parsedUrl.pathname
+  );
+  if (discountPathMatch?.[1]) {
+    const candidate = decodeURIComponent(discountPathMatch[1]).trim().toUpperCase();
+    if (
+      /^[A-Z0-9_-]{3,20}$/.test(candidate) &&
+      /[A-Z]/.test(candidate) &&
+      !PROMO_STOPWORDS.has(candidate)
+    ) {
+      return {
+        promoCode: candidate,
+        signal: {
+          field: "promoCode",
+          source: "landing_url",
+          rawMatch: `/discount/${discountPathMatch[1]}`,
+          confidence: "high",
+          note: "Extracted from Shopify shareable discount link",
+        },
+      };
+    }
+  }
+
+  return { promoCode: null, signal: null };
+}
+
 function extractVariantFromUrl(parsedUrl: URL | null): {
+  variantId: string | null;
+  variantIdSignal: ClaimSignal | null;
   variantName: string | null;
   signal: ClaimSignal | null;
 } {
-  if (!parsedUrl) return { variantName: null, signal: null };
+  if (!parsedUrl) {
+    return {
+      variantId: null,
+      variantIdSignal: null,
+      variantName: null,
+      signal: null,
+    };
+  }
 
   const params = parsedUrl.searchParams;
   const color = getParamNormalized(params, "color") ?? getParamNormalized(params, "colour");
@@ -595,9 +636,26 @@ function extractVariantFromUrl(parsedUrl: URL | null): {
   const flavor = getParamNormalized(params, "flavor") ?? getParamNormalized(params, "flavour");
   const variant = getParamNormalized(params, "variant");
 
+  let variantId: string | null = null;
+  let variantIdSignal: ClaimSignal | null = null;
+  const isNumericVariantId = variant !== null && /^\d{4,24}$/.test(variant);
+
+  if (isNumericVariantId && variant) {
+    variantId = variant;
+    variantIdSignal = {
+      field: "variantId",
+      source: "landing_url",
+      rawMatch: `variant=${variant}`,
+      confidence: "high",
+      note: "Numeric storefront variant ID parameter",
+    };
+  }
+
   if (color && size) {
     const combined = `${color} / ${size}`;
     return {
+      variantId,
+      variantIdSignal,
       variantName: combined,
       signal: {
         field: "variantName",
@@ -608,8 +666,10 @@ function extractVariantFromUrl(parsedUrl: URL | null): {
     };
   }
 
-  if (variant) {
+  if (variant && !isNumericVariantId) {
     return {
+      variantId,
+      variantIdSignal,
       variantName: variant,
       signal: {
         field: "variantName",
@@ -622,6 +682,8 @@ function extractVariantFromUrl(parsedUrl: URL | null): {
 
   if (color) {
     return {
+      variantId,
+      variantIdSignal,
       variantName: color,
       signal: {
         field: "variantName",
@@ -634,6 +696,8 @@ function extractVariantFromUrl(parsedUrl: URL | null): {
 
   if (flavor) {
     return {
+      variantId,
+      variantIdSignal,
       variantName: flavor,
       signal: {
         field: "variantName",
@@ -646,6 +710,8 @@ function extractVariantFromUrl(parsedUrl: URL | null): {
 
   if (size) {
     return {
+      variantId,
+      variantIdSignal,
       variantName: `Size ${size}`,
       signal: {
         field: "variantName",
@@ -656,7 +722,7 @@ function extractVariantFromUrl(parsedUrl: URL | null): {
     };
   }
 
-  return { variantName: null, signal: null };
+  return { variantId, variantIdSignal, variantName: null, signal: null };
 }
 
 const UTM_KEYS: Array<keyof UtmParams> = [
@@ -728,18 +794,28 @@ export function extractAdClaims(
   const priceResult = extractPricesAndCurrency(safeAdCopy);
   signals.push(...priceResult.signals);
 
-  const promoResult = extractPromoCode(safeAdCopy);
-  if (promoResult.signal) signals.push(promoResult.signal);
+  const adPromo = extractPromoCode(safeAdCopy);
+  const urlPromo = adPromo.promoCode ? null : extractPromoFromUrl(parsedUrl);
+  const promoCode = adPromo.promoCode ?? urlPromo?.promoCode ?? null;
+  if (adPromo.signal) {
+    signals.push(adPromo.signal);
+  } else if (urlPromo?.signal) {
+    signals.push(urlPromo.signal);
+  }
 
   const discountResult = extractDiscountPct(safeAdCopy);
   if (discountResult.signal) signals.push(discountResult.signal);
 
   const adVariant = extractVariantFromAdCopy(safeAdCopy);
-  const urlVariant = adVariant.variantName ? null : extractVariantFromUrl(parsedUrl);
-  const variantName = adVariant.variantName ?? urlVariant?.variantName ?? null;
+  const urlVariant = extractVariantFromUrl(parsedUrl);
+  const variantId = urlVariant.variantId;
+  const variantName = adVariant.variantName ?? urlVariant.variantName ?? null;
+  if (urlVariant.variantIdSignal) {
+    signals.push(urlVariant.variantIdSignal);
+  }
   if (adVariant.signal) {
     signals.push(adVariant.signal);
-  } else if (urlVariant?.signal) {
+  } else if (urlVariant.signal) {
     signals.push(urlVariant.signal);
   }
 
@@ -750,9 +826,10 @@ export function extractAdClaims(
     advertisedPrice: priceResult.advertisedPrice,
     compareAtPrice: priceResult.compareAtPrice,
     currency: priceResult.currency,
-    promoCode: promoResult.promoCode,
+    promoCode,
     discountPct: discountResult.discountPct,
     isUpToDiscount: discountResult.isUpToDiscount,
+    variantId,
     variantName,
     utmParams: utmResult.utmParams,
     signals,

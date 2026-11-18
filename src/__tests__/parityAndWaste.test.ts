@@ -506,6 +506,50 @@ describe("evaluateParity + calculateWaste (Gate 3)", () => {
     expect(minSpendAndUpTo.checks.find((c) => c.id === "promo_code")?.status).toBe("FAIL");
     expect(minSpendAndUpTo.checks.find((c) => c.id === "discount_math")?.status).toBe("WARN");
   });
+
+  it("matches exact numeric Shopify ?variant=<id> against StorefrontVariant.id even without ad copy variant text", () => {
+    const claims = makeClaims({
+      advertisedPrice: 80,
+      compareAtPrice: null,
+      promoCode: null,
+      discountPct: null,
+      variantId: "99887766",
+      variantName: null,
+    });
+    const storefront = makeStorefront({
+      basePrice: 80,
+      compareAtPrice: null,
+      inStock: true,
+      variants: [
+        {
+          id: "99887765",
+          title: "Cobalt Blue",
+          price: 80,
+          compareAtPrice: null,
+          available: true,
+          sku: "AERO-CB",
+        },
+        {
+          id: "99887766",
+          title: "Storm Grey",
+          price: 92,
+          compareAtPrice: null,
+          available: false,
+          sku: "AERO-SG",
+        },
+      ],
+      promoVerification: null,
+    });
+
+    const { checks, overallStatus } = evaluateParity(claims, storefront);
+    expect(overallStatus).toBe("FAIL");
+    const stockCheck = checks.find((c) => c.id === "variant_stock");
+    const priceCheck = checks.find((c) => c.id === "price_parity");
+    expect(stockCheck?.status).toBe("FAIL");
+    expect(stockCheck?.actual).toContain("Storm Grey");
+    expect(priceCheck?.status).toBe("FAIL");
+    expect(priceCheck?.actual).toContain("92.00");
+  });
 });
 
 describe("buildSlackAlert & buildMarkdownReport (Gate 3)", () => {

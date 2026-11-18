@@ -214,7 +214,32 @@ describe("parseHtmlStorefrontMetadata", () => {
     expect(parsed.promoVerification?.state).toBe("UNVERIFIED_LIVE_STORE");
   });
 
-  it("falls back to OpenGraph when JSON-LD is missing, and http_only when both are absent", () => {
+  it("falls back to Schema.org Microdata when JSON-LD is absent, then OpenGraph, then http_only", () => {
+    const microdataHtml = `
+      <html>
+        <head><title>Microdata Store</title></head>
+        <body>
+          <div itemscope itemtype="https://schema.org/Product">
+            <h1 itemprop="name">Aero Running Vest</h1>
+            <div itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+              <meta itemprop="priceCurrency" content="USD" />
+              <meta itemprop="price" content="119.00" />
+              <link itemprop="availability" href="https://schema.org/InStock" />
+              <span itemprop="sku">AERO-VEST-M</span>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+    const mdParsed = parseHtmlStorefrontMetadata(microdataHtml);
+    expect(mdParsed.source).toBe("microdata");
+    expect(mdParsed.title).toBe("Aero Running Vest");
+    expect(mdParsed.basePrice).toBe(119);
+    expect(mdParsed.currency).toBe("USD");
+    expect(mdParsed.inStock).toBe(true);
+    expect(mdParsed.variants).toHaveLength(1);
+    expect(mdParsed.variants[0]?.sku).toBe("AERO-VEST-M");
+
     const ogHtml = `
       <html>
         <head>
@@ -310,6 +335,51 @@ describe("verifyStorefront live fetch strategies", () => {
     expect(snapshot.variants[0]?.compareAtPrice).toBe(55);
     expect(snapshot.variants[1]?.price).toBe(49.5);
     expect(snapshot.variants[1]?.available).toBe(false);
+    expect(snapshot.promoVerification?.state).toBe("PAGE_BANNER_MATCH");
+  });
+
+  it("resolves Shopify /discount/<code>?redirect=/products/<handle> share links to .js product inventory", async () => {
+    const mockFetch: typeof fetch = vi.fn(async (input) => {
+      const url = typeof input === "string" ? input : input.toString();
+      if (url.endsWith("/products/aero-pack.js")) {
+        return new Response(
+          JSON.stringify({
+            title: "Aero Trail Pack",
+            price: 8000,
+            available: true,
+            variants: [
+              {
+                id: 99887766,
+                title: "Storm Grey",
+                price: 8000,
+                compare_at_price: 10000,
+                available: false,
+                sku: "AERO-SG",
+                options: ["Storm Grey"],
+              },
+            ],
+          }),
+          { status: 200, headers: { "content-type": "application/json" } }
+        );
+      }
+      return new Response(
+        '<html><head><meta property="product:price:currency" content="USD" /></head><body>Use SPRING20 for 20% off</body></html>',
+        { status: 200, headers: { "content-type": "text/html" } }
+      );
+    });
+
+    const snapshot = await verifyStorefront({
+      landingPageUrl:
+        "https://brand.example.com/discount/SPRING20?redirect=/products/aero-pack&variant=99887766",
+      promoCode: "SPRING20",
+      fetchImpl: mockFetch,
+      lookupFn: publicDnsLookup,
+    });
+
+    expect(snapshot.source).toBe("shopify_js");
+    expect(snapshot.title).toBe("Aero Trail Pack");
+    expect(snapshot.variants[0]?.id).toBe("99887766");
+    expect(snapshot.variants[0]?.available).toBe(false);
     expect(snapshot.promoVerification?.state).toBe("PAGE_BANNER_MATCH");
   });
 
