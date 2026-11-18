@@ -33,6 +33,7 @@ export const XRayRequestSchema = z.object({
     .min(0, "Daily budget cannot be negative")
     .max(1_000_000, "Daily budget cannot exceed $1,000,000"),
   fixtureId: FixtureScenarioIdSchema.optional(),
+  useGeminiFallback: z.boolean().optional(),
 });
 export type XRayRequest = z.infer<typeof XRayRequestSchema>;
 
@@ -274,3 +275,29 @@ export const DemoScenarioPresetSchema = z.object({
   dailyBudget: z.number().nonnegative(),
 });
 export type DemoScenarioPreset = z.infer<typeof DemoScenarioPresetSchema>;
+
+/**
+ * Structured claim patch returned by optional Gemini fallback extraction.
+ */
+export const GeminiClaimFallbackSchema = z.object({
+  advertisedPrice: z.number().nullable().optional(),
+  compareAtPrice: z.number().nullable().optional(),
+  currency: z.string().nullable().optional(),
+  promoCode: z.string().nullable().optional(),
+  discountPct: z.number().nullable().optional(),
+  variantName: z.string().nullable().optional(),
+});
+export type GeminiClaimFallback = z.infer<typeof GeminiClaimFallbackSchema>;
+
+/**
+ * Incoming request payload for POST /api/gemini remote querying.
+ */
+export const GeminiQueryRequestSchema = z.object({
+  prompt: z
+    .string()
+    .trim()
+    .min(3, "Enter a question of at least 3 characters")
+    .max(2000, "Question must be 2,000 characters or fewer"),
+  report: XRayReportSchema.optional(),
+});
+export type GeminiQueryRequest = z.infer<typeof GeminiQueryRequestSchema>;
