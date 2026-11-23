@@ -1,10 +1,88 @@
 @import "tailwindcss";
 
 :root {
+  color-scheme: dark light;
+
+  /* Default: Congrue-inspired Warm Charcoal Dark */
+  --bg-canvas: #282828;
+  --bg-surface: #2f2f2e;
+  --bg-surface-muted: #222221;
+  --bg-surface-subtle: #262625;
+  --text-primary: #f1eee7;
+  --text-muted: #a8a8a2;
+  --border-hairline: #3d3d3b;
+  --border-strong: #545451;
+  --accent-primary: #d8ff8f;
+  --accent-primary-hover: #c9f774;
+  --accent-ink: #141a0f;
+  --accent-soft: #2e3824;
+  --accent-soft-border: #5a7a3a;
+  --accent-soft-text: #d8ff8f;
+
+  --status-pass-bg: rgba(16, 185, 129, 0.14);
+  --status-pass-border: rgba(52, 211, 153, 0.35);
+  --status-pass-text: #6ee7b7;
+  --status-fail-bg: rgba(244, 63, 94, 0.14);
+  --status-fail-border: rgba(251, 113, 133, 0.4);
+  --status-fail-text: #fda4af;
+  --status-warn-bg: rgba(245, 158, 11, 0.14);
+  --status-warn-border: rgba(251, 191, 36, 0.38);
+  --status-warn-text: #fcd34d;
+}
+
+:root:has(> head > meta[name="color-scheme"][content="light"]) {
+  color-scheme: light;
+  --bg-canvas: #f7f5f0;
+  --bg-surface: #ffffff;
+  --bg-surface-muted: #ebe8e0;
+  --bg-surface-subtle: #f2f1ed;
+  --text-primary: #1a1a18;
+  --text-muted: #6e6e69;
+  --border-hairline: #e2e0d8;
+  --border-strong: #c8c5ba;
+  --accent-primary: #9be864;
+  --accent-primary-hover: #8cdd52;
+  --accent-ink: #141a0f;
+  --accent-soft: #eefad8;
+  --accent-soft-border: #b6e88a;
+  --accent-soft-text: #2a4714;
+
+  --status-pass-bg: rgba(16, 185, 129, 0.12);
+  --status-pass-border: rgba(16, 185, 129, 0.35);
+  --status-pass-text: #047857;
+  --status-fail-bg: rgba(244, 63, 94, 0.12);
+  --status-fail-border: rgba(244, 63, 94, 0.35);
+  --status-fail-text: #be123c;
+  --status-warn-bg: rgba(245, 158, 11, 0.12);
+  --status-warn-border: rgba(245, 158, 11, 0.35);
+  --status-warn-text: #b45309;
+}
+
+:root:has(> head > meta[name="color-scheme"][content="dark"]) {
   color-scheme: dark;
 }
 
 body {
-  background-color: #020617;
-  color: #f1f5f9;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+code,
+pre,
+.font-mono {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Theme-specific media branching driven by <meta name="color-scheme"> */
+.theme-only-light {
+  display: none;
+}
+
+:root:has(> head > meta[name="color-scheme"][content="light"]) .theme-only-light {
+  display: block;
+}
+
+:root:has(> head > meta[name="color-scheme"][content="light"]) .theme-only-dark {
+  display: none;
 }

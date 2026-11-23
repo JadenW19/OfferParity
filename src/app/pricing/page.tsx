@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, ShieldCheck, Zap } from "lucide-react";
+import { ArrowRight, CheckCircle2, Zap } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -110,45 +111,45 @@ const FAQS = [
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <header className="border-b border-slate-800/90 bg-slate-950/90 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-sky-400/40 bg-sky-500/15 text-sky-300">
+    <div className="min-h-screen bg-[var(--bg-canvas)] text-[var(--text-primary)]">
+      <header className="sticky top-0 z-40 px-4 pt-3 sm:px-6">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface)]/95 px-4 py-2 backdrop-blur">
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[var(--accent-ink)]">
               <Zap className="h-4 w-4" aria-hidden="true" />
             </div>
-            <span className="text-base font-bold tracking-tight text-white">
+            <span className="text-sm font-bold tracking-tight text-[var(--text-primary)]">
               OfferParity
             </span>
           </Link>
 
-          <nav aria-label="Primary navigation" className="flex items-center gap-4 text-xs font-semibold">
-            <Link href="/" className="text-slate-300 transition hover:text-white">
+          <nav aria-label="Primary navigation" className="flex items-center gap-3 text-xs font-semibold">
+            <Link href="/" className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]">
               Free X-Ray
             </Link>
-            <Link href="/bot" className="text-slate-300 transition hover:text-white">
+            <Link href="/bot" className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]">
               Bot Allowlist
             </Link>
             <Link
               href="/pricing"
-              className="rounded-lg bg-sky-500/15 px-3 py-1.5 text-sky-300"
+              className="rounded-full bg-[var(--accent-soft)] px-3 py-1.5 text-[var(--accent-soft-text)]"
             >
               Pricing
             </Link>
+            <ThemeToggle />
           </nav>
         </div>
       </header>
 
       <main className="mx-auto max-w-6xl space-y-12 px-4 py-10 sm:px-6 sm:py-14">
         <section className="mx-auto max-w-2xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-300">
-            <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-            <span>Sleep Insurance for Paid Media Budgets</span>
-          </div>
-          <h1 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          <p className="font-mono text-[11px] font-semibold uppercase tracking-widest text-[var(--accent-soft-text)]">
+            Pricing · Sleep Insurance for Paid Media
+          </p>
+          <h1 className="mt-3 text-3xl font-bold tracking-tight text-[var(--text-primary)] sm:text-4xl">
             Stop Paying for Clicks to Broken Offers
           </h1>
-          <p className="mt-3 text-sm leading-relaxed text-slate-300 sm:text-base">
+          <p className="mt-3 text-sm leading-relaxed text-[var(--text-muted)] sm:text-base">
             Start with the free Broken-Offer X-Ray forever. Upgrade when you want
             hourly automated monitoring and instant Slack alerts the moment a hero
             size sells out or a promo code breaks.
@@ -164,35 +165,35 @@ export default function PricingPage() {
               key={tier.id}
               className={`flex flex-col justify-between rounded-2xl border p-6 ${
                 tier.highlighted
-                  ? "border-sky-400/60 bg-slate-900/90 shadow-lg shadow-sky-950/30"
-                  : "border-slate-800 bg-slate-900/60"
+                  ? "border-[var(--text-primary)] bg-[var(--bg-surface)]"
+                  : "border-[var(--border-hairline)] bg-[var(--bg-surface)]"
               }`}
             >
               <div>
                 <div className="flex items-center justify-between gap-2">
-                  <h2 className="text-lg font-bold text-white">{tier.name}</h2>
+                  <h2 className="text-lg font-bold text-[var(--text-primary)]">{tier.name}</h2>
                   {tier.badge ? (
-                    <span className="rounded-full border border-sky-400/40 bg-sky-500/20 px-2.5 py-0.5 text-[11px] font-semibold text-sky-200">
+                    <span className="rounded-full border border-[var(--accent-soft-border)] bg-[var(--accent-soft)] px-2.5 py-0.5 text-[11px] font-semibold text-[var(--accent-soft-text)]">
                       {tier.badge}
                     </span>
                   ) : null}
                 </div>
 
                 <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-bold tracking-tight text-white">
+                  <span className="font-mono text-4xl font-bold tracking-tight text-[var(--text-primary)]">
                     {tier.price}
                   </span>
-                  <span className="text-sm text-slate-400">{tier.cadence}</span>
+                  <span className="text-sm text-[var(--text-muted)]">{tier.cadence}</span>
                 </div>
-                <p className="mt-2 text-xs leading-relaxed text-slate-300">
+                <p className="mt-2 text-xs leading-relaxed text-[var(--text-muted)]">
                   {tier.audience}
                 </p>
 
-                <ul className="mt-6 space-y-2.5 text-xs text-slate-200">
+                <ul className="mt-6 space-y-2.5 text-xs text-[var(--text-primary)]">
                   {tier.features.map((feature) => (
                     <li key={feature} className="flex items-start gap-2">
                       <CheckCircle2
-                        className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400"
+                        className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600"
                         aria-hidden="true"
                       />
                       <span>{feature}</span>
@@ -207,10 +208,10 @@ export default function PricingPage() {
                     href={tier.ctaHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
+                    className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition ${
                       tier.highlighted
-                        ? "bg-sky-500 text-slate-950 hover:bg-sky-400"
-                        : "border border-slate-700 bg-slate-950 text-white hover:border-slate-500"
+                        ? "bg-[var(--accent-primary)] text-[var(--accent-ink)] hover:bg-[var(--accent-primary-hover)]"
+                        : "border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] text-[var(--text-primary)] hover:border-[var(--border-strong)]"
                     }`}
                   >
                     <span>{tier.ctaLabel}</span>
@@ -219,10 +220,10 @@ export default function PricingPage() {
                 ) : (
                   <Link
                     href={tier.ctaHref}
-                    className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
+                    className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition ${
                       tier.highlighted
-                        ? "bg-sky-500 text-slate-950 hover:bg-sky-400"
-                        : "border border-slate-700 bg-slate-950 text-white hover:border-slate-500"
+                        ? "bg-[var(--accent-primary)] text-[var(--accent-ink)] hover:bg-[var(--accent-primary-hover)]"
+                        : "border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] text-[var(--text-primary)] hover:border-[var(--border-strong)]"
                     }`}
                   >
                     <span>{tier.ctaLabel}</span>
@@ -236,16 +237,16 @@ export default function PricingPage() {
 
         <section
           aria-label="Frequently asked questions"
-          className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 sm:p-8"
+          className="rounded-2xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-6 sm:p-8"
         >
-          <h2 className="text-lg font-bold text-white">
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">
             Frequently Asked Questions
           </h2>
           <div className="mt-6 grid gap-6 sm:grid-cols-2">
             {FAQS.map((item) => (
               <div key={item.q}>
-                <h3 className="text-sm font-semibold text-white">{item.q}</h3>
-                <p className="mt-1.5 text-xs leading-relaxed text-slate-300">
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">{item.q}</h3>
+                <p className="mt-1.5 text-xs leading-relaxed text-[var(--text-muted)]">
                   {item.a}
                 </p>
               </div>

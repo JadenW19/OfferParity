@@ -122,18 +122,18 @@ export function RecentScansBar({
   return (
     <section
       aria-label="Recent X-Ray scans"
-      className="rounded-2xl border border-slate-800 bg-slate-900/60 px-4 py-3 sm:px-5"
+      className="rounded-2xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-4 py-3 sm:px-5"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="inline-flex items-center gap-2 text-xs font-semibold text-slate-300">
-          <Clock className="h-3.5 w-3.5 text-sky-400" aria-hidden="true" />
+        <div className="inline-flex items-center gap-2 text-xs font-semibold text-[var(--text-muted)]">
+          <Clock className="h-3.5 w-3.5" aria-hidden="true" />
           <span>Recent Audits ({entries.length})</span>
         </div>
 
         <button
           type="button"
           onClick={onClearHistory}
-          className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-slate-400 transition hover:bg-slate-800 hover:text-slate-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+          className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium text-[var(--text-muted)] transition hover:bg-[var(--bg-surface-subtle)] hover:text-[var(--text-primary)]"
         >
           <Trash2 className="h-3 w-3" aria-hidden="true" />
           Clear History
@@ -149,10 +149,10 @@ export function RecentScansBar({
               key={entry.id}
               type="button"
               onClick={() => onSelectScan(entry)}
-              className="inline-flex max-w-full items-center gap-2 rounded-xl border border-slate-800 bg-slate-950/90 px-3 py-1.5 text-left text-xs transition hover:border-slate-600 hover:bg-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+              className="inline-flex max-w-full items-center gap-2 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3 py-1.5 text-left text-xs transition hover:border-[var(--border-strong)]"
             >
               <span
-                className={`rounded-md border px-1.5 py-0.5 text-[10px] font-bold ${verdictPillClass(
+                className={`rounded-full border px-1.5 py-0.5 font-mono text-[10px] font-bold ${verdictPillClass(
                   report.overallStatus
                 )}`}
               >
@@ -160,8 +160,8 @@ export function RecentScansBar({
                   ? "WAF"
                   : report.overallStatus}
               </span>
-              <span className="max-w-[180px] truncate font-medium text-slate-200">{label}</span>
-              <span className="font-mono text-[11px] text-slate-400">
+              <span className="max-w-[180px] truncate font-medium text-[var(--text-primary)]">{label}</span>
+              <span className="font-mono text-[11px] text-[var(--text-muted)]">
                 ${report.waste.estimatedDailyWaste.toFixed(0)}/d waste
               </span>
             </button>

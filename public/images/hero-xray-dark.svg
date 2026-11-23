@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 340" fill="none">
+  <rect width="480" height="340" rx="20" fill="#282828"/>
+  <!-- Subtle architectural grid -->
+  <path d="M0 85H480M0 170H480M0 255H480M120 0V340M240 0V340M360 0V340" stroke="#363634" stroke-width="1"/>
+  <!-- Isometric base plate -->
+  <path d="M240 278L96 206L240 134L384 206L240 278Z" fill="#222221" stroke="#3D3D3B" stroke-width="1.2"/>
+  <!-- Product card isometric slab -->
+  <path d="M240 248L128 192L240 136L352 192L240 248Z" fill="#2F2F2E" stroke="#F1EEE7" stroke-width="1.5"/>
+  <path d="M128 192V206L240 262V248L128 192Z" fill="#242423" stroke="#F1EEE7" stroke-width="1.5"/>
+  <path d="M352 192V206L240 262V248L352 192Z" fill="#1E1E1D" stroke="#F1EEE7" stroke-width="1.5"/>
+  <!-- Price tag & SKU lines on card -->
+  <path d="M188 182L232 160L278 183L234 205L188 182Z" fill="#282828" stroke="#D8FF8F" stroke-width="1.2"/>
+  <circle cx="232" cy="172" r="4" fill="#D8FF8F"/>
+  <path d="M204 214L262 185" stroke="#F1EEE7" stroke-width="2" stroke-linecap="round"/>
+  <path d="M222 223L276 196" stroke="#8C8C86" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Optical X-Ray scanner frame -->
+  <path d="M240 72L134 125V166L240 113L346 166V125L240 72Z" fill="#D8FF8F" fill-opacity="0.14" stroke="#D8FF8F" stroke-width="1.5"/>
+  <!-- Laser scan beam -->
+  <path d="M134 146L240 199L346 146" stroke="#D8FF8F" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Verified parity badge -->
+  <circle cx="348" cy="108" r="22" fill="#D8FF8F" stroke="#282828" stroke-width="1.5"/>
+  <path d="M339 108L345 114L358 101" stroke="#141A0F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { FileSpreadsheet, Search, ShieldCheck, Zap } from "lucide-react";
+import { FileSpreadsheet, Search, Zap } from "lucide-react";
 import { AlertExportPanel } from "@/components/AlertExportPanel";
 import { BatchAuditPanel } from "@/components/BatchAuditPanel";
 import { ClaimsComparisonCard } from "@/components/ClaimsComparisonCard";
@@ -19,6 +20,7 @@ import {
   type RecentScanEntry,
 } from "@/components/RecentScansBar";
 import { ScenarioSelector } from "@/components/ScenarioSelector";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { WasteSummaryBanner } from "@/components/WasteSummaryBanner";
 import { XRayForm } from "@/components/XRayForm";
 import { trackEvent } from "@/lib/analytics";
@@ -352,84 +354,111 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <header className="border-b border-slate-800/90 bg-slate-950/90 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-sky-400/40 bg-sky-500/15 text-sky-300">
-              <Zap className="h-5 w-5" aria-hidden="true" />
+    <div className="min-h-screen bg-[var(--bg-canvas)] text-[var(--text-primary)]">
+      <header className="sticky top-0 z-40 px-4 pt-3 sm:px-6">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface)]/95 px-4 py-2 backdrop-blur">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[var(--accent-ink)]">
+              <Zap className="h-4 w-4" aria-hidden="true" />
             </div>
-            <div>
-              <h1 className="text-lg font-bold tracking-tight text-white sm:text-xl">
-                OfferParity — Broken-Offer X-Ray
-              </h1>
-              <p className="text-xs text-slate-400">
-                Pre-flight &amp; live ad-to-checkout parity verification for DTC performance teams
-              </p>
-            </div>
+            <h1 className="text-sm font-bold tracking-tight text-[var(--text-primary)] sm:text-base">
+              OfferParity — Broken-Offer X-Ray
+            </h1>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
             <div
               role="group"
               aria-label="Audit workflow mode"
-              className="inline-flex rounded-xl border border-slate-800 bg-slate-900 p-1"
+              className="inline-flex rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] p-0.5"
             >
               <button
                 type="button"
                 aria-pressed={mode === "single"}
                 onClick={() => handleModeSwitch("single")}
-                className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400 ${
-                  mode === "single"
-                    ? "bg-sky-500 text-slate-950 shadow-sm"
-                    : "text-slate-300 hover:text-white"
-                }`}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition ${mode === "single"
+                  ? "bg-[var(--accent-primary)] text-[var(--accent-ink)]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  }`}
               >
-                <Search className="h-3.5 w-3.5" aria-hidden="true" />
+                <Search className="h-3 w-3" aria-hidden="true" />
                 Single Ad X-Ray
               </button>
               <button
                 type="button"
                 aria-pressed={mode === "batch"}
                 onClick={() => handleModeSwitch("batch")}
-                className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400 ${
-                  mode === "batch"
-                    ? "bg-sky-500 text-slate-950 shadow-sm"
-                    : "text-slate-300 hover:text-white"
-                }`}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition ${mode === "batch"
+                  ? "bg-[var(--accent-primary)] text-[var(--accent-ink)]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  }`}
               >
-                <FileSpreadsheet className="h-3.5 w-3.5" aria-hidden="true" />
+                <FileSpreadsheet className="h-3 w-3" aria-hidden="true" />
                 Batch CSV Pre-Flight
               </button>
             </div>
 
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-300">
-              <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-              <span>Zero Auth Walls · Deterministic Spend Audit</span>
-            </div>
-
-            <nav aria-label="Secondary navigation" className="flex items-center gap-3 text-xs font-semibold">
+            <nav aria-label="Secondary navigation" className="flex items-center gap-2 text-xs font-semibold">
               <Link
                 href="/pricing"
                 onClick={() => trackEvent("pricing_cta_clicked", { from: "header" })}
-                className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-slate-200 transition hover:border-sky-400 hover:text-white"
+                className="rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3 py-1.5 text-[var(--text-primary)] transition hover:border-[var(--border-strong)]"
               >
                 Pricing
               </Link>
               <Link
                 href="/bot"
-                className="text-slate-400 transition hover:text-slate-200"
+                className="hidden px-2 py-1 text-[var(--text-muted)] transition hover:text-[var(--text-primary)] sm:inline"
               >
-                Bot Allowlist
+                Bot
               </Link>
+              <ThemeToggle />
             </nav>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 sm:py-8">
+      <main className="mx-auto max-w-6xl space-y-5 px-4 py-6 sm:px-6 sm:py-8">
         {mode === "single" ? (
           <>
+            <section
+              aria-label="OfferParity overview"
+              className="grid items-center gap-6 rounded-2xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-5 sm:p-7 lg:grid-cols-12"
+            >
+              <div className="space-y-3 lg:col-span-7">
+                <p className="font-mono text-[11px] font-semibold uppercase tracking-widest text-[var(--accent-soft-text)]">
+                  Deterministic Ad-to-Checkout Audit
+                </p>
+                <h2 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-4xl">
+                  Stop paying for clicks to broken offers.
+                </h2>
+                <p className="max-w-xl text-sm leading-relaxed text-[var(--text-muted)]">
+                  Verify ad copy against live Shopify prices, variant stock,
+                  promo codes, and UTMs in seconds—before wasted spend compounds.
+                </p>
+              </div>
+              <div className="lg:col-span-5">
+                <div className="overflow-hidden rounded-xl border border-[var(--border-hairline)]">
+                  <Image
+                    src="/images/hero-xray-light.svg"
+                    alt="Isometric OfferParity scanner verifying ad price and variant stock"
+                    width={480}
+                    height={340}
+                    priority
+                    className="theme-only-light h-auto w-full"
+                  />
+                  <Image
+                    src="/images/hero-xray-dark.svg"
+                    alt="Isometric OfferParity scanner verifying ad price and variant stock"
+                    width={480}
+                    height={340}
+                    priority
+                    className="theme-only-dark h-auto w-full"
+                  />
+                </div>
+              </div>
+            </section>
+
             <ScenarioSelector
               activeFixtureId={activeFixtureId}
               isLoading={isLoading}
@@ -480,55 +509,82 @@ export default function HomePage() {
 
         <section
           aria-label="How OfferParity protects ad spend"
-          className="grid gap-4 rounded-2xl border border-slate-800/90 bg-slate-900/50 p-5 sm:grid-cols-3 sm:p-6"
+          className="grid gap-5 rounded-2xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-6 sm:grid-cols-3"
         >
-          <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-sky-300">
-              100% Deterministic
-            </h2>
-            <p className="mt-1 text-xs leading-relaxed text-slate-300">
-              Pure-code extraction and live Shopify/JSON-LD verification—zero
-              LLM hallucinations or guessed prices.
-            </p>
+          <div className="flex items-start gap-3.5">
+            <Image
+              src="/images/spot-deterministic.svg"
+              alt=""
+              width={44}
+              height={44}
+              className="h-11 w-11 shrink-0 rounded-xl border border-[var(--border-hairline)]"
+            />
+            <div>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
+                100% Deterministic
+              </h2>
+              <p className="mt-1 text-xs leading-relaxed text-[var(--text-muted)]">
+                Pure-code extraction and live Shopify/JSON-LD verification—zero
+                LLM hallucinations or guessed prices.
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-300">
-              Zero Ad-Account Risk
-            </h2>
-            <p className="mt-1 text-xs leading-relaxed text-slate-300">
-              Never requires Meta/TikTok write OAuth and never auto-pauses ads
-              or resets campaign learning phases.
-            </p>
+          <div className="flex items-start gap-3.5">
+            <Image
+              src="/images/spot-zero-oauth.svg"
+              alt=""
+              width={44}
+              height={44}
+              className="h-11 w-11 shrink-0 rounded-xl border border-[var(--border-hairline)]"
+            />
+            <div>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
+                Zero Ad-Account Risk
+              </h2>
+              <p className="mt-1 text-xs leading-relaxed text-[var(--text-muted)]">
+                Never requires Meta/TikTok write OAuth and never auto-pauses ads
+                or resets campaign learning phases.
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-amber-300">
-              Built for Agencies &amp; DTC
-            </h2>
-            <p className="mt-1 text-xs leading-relaxed text-slate-300">
-              Audit 25 ads in seconds via CSV or upgrade to hourly Slack
-              regression alerts starting at $99/mo.{" "}
-              <Link href="/pricing" className="font-semibold text-sky-400 hover:underline">
-                View plans →
-              </Link>
-            </p>
+          <div className="flex items-start gap-3.5">
+            <Image
+              src="/images/spot-slack-alert.svg"
+              alt=""
+              width={44}
+              height={44}
+              className="h-11 w-11 shrink-0 rounded-xl border border-[var(--border-hairline)]"
+            />
+            <div>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
+                Built for Agencies &amp; DTC
+              </h2>
+              <p className="mt-1 text-xs leading-relaxed text-[var(--text-muted)]">
+                Audit 25 ads in seconds via CSV or upgrade to hourly Slack
+                regression alerts starting at $99/mo.{" "}
+                <Link href="/pricing" className="font-semibold underline">
+                  View plans →
+                </Link>
+              </p>
+            </div>
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-500">
+      <footer className="border-t border-[var(--border-hairline)] py-6 text-xs text-[var(--text-muted)]">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 sm:px-6">
           <span>OfferParity · Deterministic Ad-to-Checkout Parity Verification</span>
           <div className="flex items-center gap-4">
-            <Link href="/pricing" className="hover:text-slate-300">
+            <Link href="/pricing" className="hover:text-[var(--text-primary)]">
               Pricing
             </Link>
-            <Link href="/bot" className="hover:text-slate-300">
+            <Link href="/bot" className="hover:text-[var(--text-primary)]">
               OfferParityBot/1.0
             </Link>
-            <Link href="/privacy" className="hover:text-slate-300">
+            <Link href="/privacy" className="hover:text-[var(--text-primary)]">
               Privacy
             </Link>
-            <Link href="/terms" className="hover:text-slate-300">
+            <Link href="/terms" className="hover:text-[var(--text-primary)]">
               Terms
             </Link>
           </div>

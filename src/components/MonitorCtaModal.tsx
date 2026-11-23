@@ -129,30 +129,30 @@ export function MonitorCtaModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="monitor-cta-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
     >
-      <div className="relative w-full max-w-lg rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl">
+      <div className="relative w-full max-w-lg rounded-2xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-6 shadow-2xl">
         <button
           type="button"
           onClick={onClose}
           aria-label="Close monitoring modal"
-          className="absolute right-4 top-4 rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-800 hover:text-white"
+          className="absolute right-4 top-4 rounded-lg p-1.5 text-[var(--text-muted)] transition hover:bg-[var(--bg-surface-subtle)] hover:text-[var(--text-primary)]"
         >
           <X className="h-4 w-4" aria-hidden="true" />
         </button>
 
         <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-sky-400/40 bg-sky-500/15 text-sky-300">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--accent-soft-border)] bg-[var(--accent-soft)] text-[var(--accent-soft-text)]">
             <BellRing className="h-5 w-5" aria-hidden="true" />
           </div>
           <div>
             <h2
               id="monitor-cta-title"
-              className="text-lg font-bold text-white"
+              className="text-lg font-bold text-[var(--text-primary)]"
             >
               Monitor Offers Hourly in Slack
             </h2>
-            <p className="mt-1 text-xs leading-relaxed text-slate-300">
+            <p className="mt-1 text-xs leading-relaxed text-[var(--text-muted)]">
               Get alerted in Slack the moment a hero variant sells out, a promo
               code expires, or landing page pricing drifts from your ad copy.
             </p>
@@ -160,24 +160,24 @@ export function MonitorCtaModal({
         </div>
 
         {context.scannedUrl || typeof context.totalRows === "number" ? (
-          <div className="mt-4 rounded-xl border border-slate-800 bg-slate-950/80 px-3.5 py-2.5 text-xs text-slate-300">
+          <div className="mt-4 rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3.5 py-2.5 text-xs text-[var(--text-muted)]">
             {typeof context.totalRows === "number" ? (
               <p>
-                <strong className="text-white">
+                <strong className="text-[var(--text-primary)]">
                   {context.totalRows} campaign ads
                 </strong>{" "}
                 queued ·{" "}
-                <span className="text-rose-300">
+                <span className="font-mono text-[var(--status-fail-text)]">
                   {formatUsd(context.dailyWaste ?? 0)}/day detected waste
                 </span>
               </p>
             ) : (
               <p className="truncate">
-                <strong className="text-white">Target:</strong>{" "}
-                <span className="text-slate-400">{context.scannedUrl}</span>
+                <strong className="text-[var(--text-primary)]">Target:</strong>{" "}
+                <span>{context.scannedUrl}</span>
                 {typeof context.dailyWaste === "number" &&
                 context.dailyWaste > 0 ? (
-                  <span className="ml-2 font-semibold text-rose-300">
+                  <span className="ml-2 font-mono font-semibold text-[var(--status-fail-text)]">
                     ({formatUsd(context.dailyWaste)}/day waste)
                   </span>
                 ) : null}
@@ -189,18 +189,18 @@ export function MonitorCtaModal({
         {submitted ? (
           <div
             data-testid="monitor-cta-success"
-            className="mt-5 space-y-4 rounded-xl border border-emerald-500/40 bg-emerald-950/35 p-4 text-xs text-emerald-100"
+            className="mt-5 space-y-4 rounded-xl border border-[var(--status-pass-border)] bg-[var(--status-pass-bg)] p-4 text-xs text-[var(--text-primary)]"
           >
             <div className="flex items-start gap-2.5">
               <CheckCircle2
-                className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400"
+                className="mt-0.5 h-5 w-5 shrink-0 text-[var(--status-pass-text)]"
                 aria-hidden="true"
               />
               <div>
-                <p className="font-semibold text-white">
+                <p className="font-semibold">
                   Monitoring request received for {email}
                 </p>
-                <p className="mt-1 text-emerald-200/90">
+                <p className="mt-1 text-[var(--text-muted)]">
                   We&apos;ll reach out shortly to connect your Slack channel and
                   import your Watchlist.
                 </p>
@@ -212,7 +212,7 @@ export function MonitorCtaModal({
                 href={activeStripeLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-500 px-4 py-2.5 text-xs font-semibold text-slate-950 transition hover:bg-sky-400"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[var(--accent-primary)] px-4 py-2.5 text-xs font-semibold text-[var(--accent-ink)] transition hover:bg-[var(--accent-primary-hover)]"
               >
                 <span>
                   Skip the wait — Activate{" "}
@@ -234,12 +234,12 @@ export function MonitorCtaModal({
                 }}
                 className={`rounded-xl border p-3 text-left transition ${
                   planInterest === "growth"
-                    ? "border-sky-400 bg-sky-500/15 text-white"
-                    : "border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-600"
+                    ? "border-[var(--text-primary)] bg-[var(--accent-soft)] text-[var(--accent-soft-text)]"
+                    : "border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
                 }`}
               >
                 <p className="text-xs font-bold">Growth · $99/mo</p>
-                <p className="mt-0.5 text-[11px] text-slate-400">
+                <p className="mt-0.5 text-[11px] opacity-80">
                   1 brand · 25 hourly URLs
                 </p>
               </button>
@@ -252,12 +252,12 @@ export function MonitorCtaModal({
                 }}
                 className={`rounded-xl border p-3 text-left transition ${
                   planInterest === "agency"
-                    ? "border-sky-400 bg-sky-500/15 text-white"
-                    : "border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-600"
+                    ? "border-[var(--text-primary)] bg-[var(--accent-soft)] text-[var(--accent-soft-text)]"
+                    : "border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
                 }`}
               >
                 <p className="text-xs font-bold">Agency · $249/mo</p>
-                <p className="mt-0.5 text-[11px] text-slate-400">
+                <p className="mt-0.5 text-[11px] opacity-80">
                   10 brands · 250 hourly URLs
                 </p>
               </button>
@@ -266,7 +266,7 @@ export function MonitorCtaModal({
             <div>
               <label
                 htmlFor="monitor-lead-email"
-                className="mb-1 block text-xs font-medium text-slate-200"
+                className="mb-1 block text-xs font-medium text-[var(--text-primary)]"
               >
                 Work Email *
               </label>
@@ -280,14 +280,14 @@ export function MonitorCtaModal({
                   setServerError(null);
                 }}
                 placeholder="you@brandoragency.com"
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400/30"
+                className="w-full rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3 py-2 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none"
               />
             </div>
 
             <div>
               <label
                 htmlFor="monitor-lead-company"
-                className="mb-1 block text-xs font-medium text-slate-200"
+                className="mb-1 block text-xs font-medium text-[var(--text-primary)]"
               >
                 Brand or Agency Name (optional)
               </label>
@@ -300,14 +300,14 @@ export function MonitorCtaModal({
                   setServerError(null);
                 }}
                 placeholder="e.g., Ridgewood Media / Lumina Goods"
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400/30"
+                className="w-full rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3 py-2 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none"
               />
             </div>
 
             <div>
               <label
                 htmlFor="monitor-lead-notes"
-                className="mb-1 block text-xs font-medium text-slate-200"
+                className="mb-1 block text-xs font-medium text-[var(--text-primary)]"
               >
                 Active Ad Count or Slack Channel Note (optional)
               </label>
@@ -320,17 +320,17 @@ export function MonitorCtaModal({
                   setServerError(null);
                 }}
                 placeholder="e.g., 40 active Meta ads across 3 Shopify stores"
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400/30"
+                className="w-full rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3 py-2 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none"
               />
             </div>
 
             {serverError ? (
               <p
                 role="alert"
-                className="flex items-center gap-1.5 text-xs font-medium text-rose-300"
+                className="flex items-center gap-1.5 text-xs font-medium text-[var(--status-fail-text)]"
               >
                 <AlertCircle
-                  className="h-3.5 w-3.5 shrink-0 text-rose-400"
+                  className="h-3.5 w-3.5 shrink-0"
                   aria-hidden="true"
                 />
                 <span>{serverError}</span>
@@ -341,14 +341,14 @@ export function MonitorCtaModal({
               <Link
                 href="/pricing"
                 onClick={() => trackEvent("pricing_cta_clicked", { from: "modal" })}
-                className="text-xs font-medium text-sky-400 hover:underline"
+                className="text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:underline"
               >
                 Compare plans &amp; FAQ →
               </Link>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-500 px-4 py-2.5 text-xs font-semibold text-slate-950 transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent-primary)] px-4 py-2.5 text-xs font-semibold text-[var(--accent-ink)] transition hover:bg-[var(--accent-primary-hover)] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>

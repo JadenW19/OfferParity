@@ -198,14 +198,14 @@ export function AlertExportPanel({ report }: AlertExportPanelProps) {
   return (
     <section
       aria-label="Slack alert preview and QA report exports"
-      className="rounded-2xl border border-slate-800 bg-slate-900/75 p-4 sm:p-6"
+      className="rounded-2xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-5 sm:p-6"
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold text-white">
+          <h2 className="text-base font-semibold text-[var(--text-primary)]">
             Slack Burn-Rate Alert &amp; QA Exports
           </h2>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-[var(--text-muted)]">
             Ready-to-paste media-buyer alert card, live Slack webhook delivery, and shareable QA
             permalinks.
           </p>
@@ -215,7 +215,7 @@ export function AlertExportPanel({ report }: AlertExportPanelProps) {
           <button
             type="button"
             onClick={handleCopySlack}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-sky-500 px-3 py-2 text-xs font-semibold text-slate-950 transition hover:bg-sky-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
+            className="inline-flex items-center gap-1.5 rounded-full bg-[var(--accent-primary)] px-3.5 py-2 text-xs font-semibold text-[var(--accent-ink)] transition hover:bg-[var(--accent-primary-hover)]"
           >
             {copiedTarget === "slack" ? (
               <>
@@ -237,7 +237,7 @@ export function AlertExportPanel({ report }: AlertExportPanelProps) {
               setShowSlackWebhookBar((prev) => !prev);
               setWebhookError(null);
             }}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-sky-500/40 bg-sky-500/10 px-3 py-2 text-xs font-semibold text-sky-200 transition hover:border-sky-400 hover:bg-sky-500/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-strong)]"
           >
             <Send className="h-3.5 w-3.5" aria-hidden="true" />
             Send to Slack Webhook
@@ -246,11 +246,11 @@ export function AlertExportPanel({ report }: AlertExportPanelProps) {
           <button
             type="button"
             onClick={handleCopyShareLink}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-strong)]"
           >
             {copiedTarget === "share" ? (
               <>
-                <Check className="h-3.5 w-3.5 text-emerald-400" aria-hidden="true" />
+                <Check className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
                 Link Copied!
               </>
             ) : (
@@ -264,11 +264,11 @@ export function AlertExportPanel({ report }: AlertExportPanelProps) {
           <button
             type="button"
             onClick={handleCopyMarkdown}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-strong)]"
           >
             {copiedTarget === "markdown" ? (
               <>
-                <Check className="h-3.5 w-3.5 text-emerald-400" aria-hidden="true" />
+                <Check className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
                 Copied!
               </>
             ) : (
@@ -282,7 +282,7 @@ export function AlertExportPanel({ report }: AlertExportPanelProps) {
           <button
             type="button"
             onClick={handleDownloadJson}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-strong)]"
           >
             <Download className="h-3.5 w-3.5" aria-hidden="true" />
             Download JSON
@@ -291,7 +291,7 @@ export function AlertExportPanel({ report }: AlertExportPanelProps) {
           <button
             type="button"
             onClick={handleDownloadMarkdown}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-strong)]"
           >
             <Download className="h-3.5 w-3.5" aria-hidden="true" />
             Download Markdown
@@ -302,7 +302,7 @@ export function AlertExportPanel({ report }: AlertExportPanelProps) {
       {showSlackWebhookBar ? (
         <form
           onSubmit={handleSendSlackWebhook}
-          className="mt-3 rounded-xl border border-slate-800 bg-slate-950/90 p-3.5"
+          className="mt-3 rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] p-3.5"
         >
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <label htmlFor="slack-webhook-url" className="sr-only">
@@ -317,12 +317,12 @@ export function AlertExportPanel({ report }: AlertExportPanelProps) {
                 setWebhookError(null);
               }}
               placeholder="Optional: https://hooks.slack.com/services/... (leave blank to use server SLACK_WEBHOOK_URL)"
-              className="w-full flex-1 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400/30"
+              className="w-full flex-1 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3 py-2 font-mono text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none"
             />
             <button
               type="submit"
               disabled={isSendingWebhook}
-              className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg bg-sky-500 px-3.5 py-2 text-xs font-semibold text-slate-950 transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
+              className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full bg-[var(--accent-primary)] px-4 py-2 text-xs font-semibold text-[var(--accent-ink)] transition hover:bg-[var(--accent-primary-hover)] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSendingWebhook ? (
                 <>
@@ -340,13 +340,13 @@ export function AlertExportPanel({ report }: AlertExportPanelProps) {
           {webhookError ? (
             <p
               role="alert"
-              className="mt-2 flex items-center gap-1.5 text-xs font-medium text-rose-300"
+              className="mt-2 flex items-center gap-1.5 text-xs font-medium text-[var(--status-fail-text)]"
             >
-              <AlertCircle className="h-3.5 w-3.5 shrink-0 text-rose-400" aria-hidden="true" />
+              <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
               <span>{webhookError}</span>
             </p>
           ) : (
-            <p className="mt-1.5 text-[11px] text-slate-400">
+            <p className="mt-1.5 text-[11px] text-[var(--text-muted)]">
               Restricted strictly to verified <code>https://hooks.slack.com/services/...</code>{" "}
               endpoints.
             </p>
@@ -358,19 +358,19 @@ export function AlertExportPanel({ report }: AlertExportPanelProps) {
         {statusMessage}
       </p>
 
-      <div className="mt-2 flex items-center gap-2 border-b border-slate-800 pb-2" role="tablist">
+      <div className="mt-2 flex items-center gap-2 border-b border-[var(--border-hairline)] pb-2" role="tablist">
         <button
           type="button"
           role="tab"
           aria-selected={activeTab === "slack"}
           onClick={() => setActiveTab("slack")}
-          className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400 ${
+          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
             activeTab === "slack"
-              ? "bg-slate-800 text-white"
-              : "text-slate-400 hover:bg-slate-900 hover:text-slate-200"
+              ? "bg-[var(--bg-surface-muted)] text-[var(--text-primary)]"
+              : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           }`}
         >
-          <MessageSquareWarning className="h-3.5 w-3.5 text-sky-400" aria-hidden="true" />
+          <MessageSquareWarning className="h-3.5 w-3.5" aria-hidden="true" />
           Slack Burn-Rate Preview
         </button>
         <button
@@ -378,20 +378,20 @@ export function AlertExportPanel({ report }: AlertExportPanelProps) {
           role="tab"
           aria-selected={activeTab === "markdown"}
           onClick={() => setActiveTab("markdown")}
-          className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400 ${
+          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
             activeTab === "markdown"
-              ? "bg-slate-800 text-white"
-              : "text-slate-400 hover:bg-slate-900 hover:text-slate-200"
+              ? "bg-[var(--bg-surface-muted)] text-[var(--text-primary)]"
+              : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           }`}
         >
-          <FileCode2 className="h-3.5 w-3.5 text-emerald-400" aria-hidden="true" />
+          <FileCode2 className="h-3.5 w-3.5" aria-hidden="true" />
           Markdown QA Preview
         </button>
       </div>
 
       <pre
         data-testid="export-preview-content"
-        className="mt-3 max-h-80 overflow-x-auto overflow-y-auto whitespace-pre-wrap rounded-xl border border-slate-800 bg-slate-950 p-4 font-mono text-xs leading-relaxed text-slate-200"
+        className="mt-3 max-h-80 overflow-x-auto overflow-y-auto whitespace-pre-wrap rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] p-4 font-mono text-xs leading-relaxed text-[var(--text-primary)]"
       >
         {activeTab === "slack" ? report.slackAlert : report.markdownReport}
       </pre>

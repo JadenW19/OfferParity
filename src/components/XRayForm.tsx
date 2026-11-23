@@ -84,16 +84,18 @@ export function XRayForm({
   return (
     <section
       aria-label="OfferParity X-Ray inputs"
-      className="rounded-2xl border border-slate-800 bg-slate-900/75 p-4 sm:p-6"
+      className="rounded-2xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-5 sm:p-6"
     >
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h2 className="text-base font-semibold text-white">Ad &amp; Landing Page Inspector</h2>
-          <p className="text-xs text-slate-400">
-            Paste live ad copy and a product URL, or customize any demo scenario above.
+          <h2 className="text-base font-semibold text-[var(--text-primary)]">
+            Ad &amp; Landing Page Inspector
+          </h2>
+          <p className="text-xs text-[var(--text-muted)]">
+            Paste live ad copy and a product URL, or pick a scenario above.
           </p>
         </div>
-        <span className="rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-300">
+        <span className="rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3 py-1 font-mono text-[11px] font-medium text-[var(--text-muted)]">
           {activeFixtureId ? `Fixture: ${activeFixtureId}` : "Live Storefront Fetch"}
         </span>
       </div>
@@ -103,12 +105,14 @@ export function XRayForm({
           <div className="mb-1.5 flex items-center justify-between gap-2">
             <label
               htmlFor="xray-ad-copy"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-200"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]"
             >
-              <FileText className="h-4 w-4 text-sky-400" aria-hidden="true" />
+              <FileText className="h-3.5 w-3.5" aria-hidden="true" />
               Ad Copy / Script
             </label>
-            <span className="text-xs text-slate-400">{adCopy.trim().length} / 5,000 chars</span>
+            <span className="font-mono text-[11px] text-[var(--text-muted)]">
+              {adCopy.trim().length} / 5,000
+            </span>
           </div>
           <textarea
             id="xray-ad-copy"
@@ -119,10 +123,10 @@ export function XRayForm({
             aria-invalid={Boolean(fieldErrors.adCopy)}
             aria-describedby={fieldErrors.adCopy ? "xray-ad-copy-error" : undefined}
             placeholder="e.g. Ultralight warmth for cold-weather miles. Kova Merino Trail Hoodie in Alpine Olive (Size L) — just $68.00 today."
-            className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400/30"
+            className="w-full rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3.5 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none"
           />
           {fieldErrors.adCopy ? (
-            <p id="xray-ad-copy-error" role="alert" className="mt-1 text-xs text-rose-400">
+            <p id="xray-ad-copy-error" role="alert" className="mt-1 text-xs font-medium text-rose-600">
               {fieldErrors.adCopy}
             </p>
           ) : null}
@@ -132,9 +136,9 @@ export function XRayForm({
           <div className="lg:col-span-7">
             <label
               htmlFor="xray-landing-url"
-              className="mb-1.5 inline-flex items-center gap-1.5 text-sm font-medium text-slate-200"
+              className="mb-1.5 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]"
             >
-              <Link2 className="h-4 w-4 text-sky-400" aria-hidden="true" />
+              <Link2 className="h-3.5 w-3.5" aria-hidden="true" />
               Landing Page URL
             </label>
             <input
@@ -146,10 +150,10 @@ export function XRayForm({
               aria-invalid={Boolean(fieldErrors.landingPageUrl)}
               aria-describedby={fieldErrors.landingPageUrl ? "xray-landing-url-error" : undefined}
               placeholder="https://store.example.com/products/hero-item?utm_source=meta&utm_medium=paid_social&utm_campaign=launch"
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400/30"
+              className="w-full rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3.5 py-2.5 font-mono text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none"
             />
             {fieldErrors.landingPageUrl ? (
-              <p id="xray-landing-url-error" role="alert" className="mt-1 text-xs text-rose-400">
+              <p id="xray-landing-url-error" role="alert" className="mt-1 text-xs font-medium text-rose-600">
                 {fieldErrors.landingPageUrl}
               </p>
             ) : null}
@@ -158,9 +162,9 @@ export function XRayForm({
           <div className="lg:col-span-5">
             <label
               htmlFor="xray-daily-budget"
-              className="mb-1.5 inline-flex items-center gap-1.5 text-sm font-medium text-slate-200"
+              className="mb-1.5 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]"
             >
-              <DollarSign className="h-4 w-4 text-sky-400" aria-hidden="true" />
+              <DollarSign className="h-3.5 w-3.5" aria-hidden="true" />
               Daily Ad Budget (USD)
             </label>
             <input
@@ -174,7 +178,7 @@ export function XRayForm({
               onChange={(e) => onDailyBudgetChange(e.target.value)}
               aria-invalid={Boolean(fieldErrors.dailyBudget)}
               aria-describedby={fieldErrors.dailyBudget ? "xray-daily-budget-error" : undefined}
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400/30"
+              className="w-full rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3.5 py-2.5 font-mono text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--text-primary)] focus:outline-none"
             />
             <div className="mt-2 flex flex-wrap items-center gap-1.5" aria-label="Quick-select daily budgets">
               {QUICK_BUDGET_PRESETS.map((amount) => {
@@ -185,10 +189,10 @@ export function XRayForm({
                     type="button"
                     aria-pressed={isSelected}
                     onClick={() => onDailyBudgetChange(String(amount))}
-                    className={`rounded-lg border px-2.5 py-1 text-xs font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400 ${
+                    className={`rounded-full border px-2.5 py-1 font-mono text-xs font-medium transition ${
                       isSelected
-                        ? "border-sky-400 bg-sky-500/20 text-sky-200"
-                        : "border-slate-700 bg-slate-950 text-slate-300 hover:border-slate-500 hover:text-white"
+                        ? "border-[var(--text-primary)] bg-[var(--accent-soft)] text-[var(--accent-soft-text)]"
+                        : "border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
                     }`}
                   >
                     ${amount.toLocaleString("en-US")}
@@ -197,7 +201,7 @@ export function XRayForm({
               })}
             </div>
             {fieldErrors.dailyBudget ? (
-              <p id="xray-daily-budget-error" role="alert" className="mt-1 text-xs text-rose-400">
+              <p id="xray-daily-budget-error" role="alert" className="mt-1 text-xs font-medium text-rose-600">
                 {fieldErrors.dailyBudget}
               </p>
             ) : null}
@@ -207,21 +211,21 @@ export function XRayForm({
         {serverError ? (
           <div
             role="alert"
-            className="flex items-start gap-2 rounded-xl border border-rose-500/40 bg-rose-950/50 px-3.5 py-2.5 text-sm text-rose-200"
+            className="flex items-start gap-2 rounded-xl border border-rose-500/40 bg-rose-500/10 px-3.5 py-2.5 text-sm text-rose-600"
           >
-            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-400" aria-hidden="true" />
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
             <span>{serverError}</span>
           </div>
         ) : null}
 
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-          <p className="text-xs text-slate-400">
-            100% deterministic audit · SSRF-protected server verification · 8s hard timeout
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border-hairline)] pt-4">
+          <p className="text-xs text-[var(--text-muted)]">
+            100% deterministic audit · SSRF-protected · 8s timeout
           </p>
           <button
             type="submit"
             disabled={isLoading || hasValidationErrors}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-500 px-5 py-2.5 text-sm font-semibold text-slate-950 shadow-sm transition hover:bg-sky-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent-primary)] px-6 py-2.5 text-sm font-semibold text-[var(--accent-ink)] transition hover:bg-[var(--accent-primary-hover)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isLoading ? (
               <>
