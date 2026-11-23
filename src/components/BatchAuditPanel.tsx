@@ -3,7 +3,9 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import {
   AlertCircle,
+  ArrowRight,
   ArrowUpRight,
+  BellRing,
   Check,
   Copy,
   Download,
@@ -32,6 +34,7 @@ type StatusFilter = "ALL" | "FAIL" | "WARN" | "PASS";
 
 interface BatchAuditPanelProps {
   onInspectReport: (report: XRayReport) => void;
+  onOpenBatchMonitorCta?: (batchResult: BatchXRayResponse) => void;
 }
 
 function formatUsd(amount: number): string {
@@ -55,7 +58,10 @@ function verdictBadgeClass(status: OverallVerdict | "ERROR"): string {
   }
 }
 
-export function BatchAuditPanel({ onInspectReport }: BatchAuditPanelProps) {
+export function BatchAuditPanel({
+  onInspectReport,
+  onOpenBatchMonitorCta,
+}: BatchAuditPanelProps) {
   const [csvText, setCsvText] = useState<string>(SAMPLE_AGENCY_CAMPAIGN_CSV);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -338,6 +344,18 @@ export function BatchAuditPanel({ onInspectReport }: BatchAuditPanelProps) {
                 <Download className="h-3.5 w-3.5" aria-hidden="true" />
                 Download Audit CSV
               </button>
+
+              {onOpenBatchMonitorCta ? (
+                <button
+                  type="button"
+                  onClick={() => onOpenBatchMonitorCta(batchResult)}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-sky-400/50 bg-sky-500/15 px-3 py-2 text-xs font-semibold text-sky-200 transition hover:border-sky-300 hover:bg-sky-500/25"
+                >
+                  <BellRing className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span>Monitor All {batchResult.summary.totalRows} Ads Hourly</span>
+                  <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
+              ) : null}
             </div>
           </div>
 

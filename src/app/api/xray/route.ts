@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { XRayRequestSchema } from "@/lib/schemas";
+
+export const dynamic = "force-dynamic";
 import {
   checkRateLimit,
   getClientIp,

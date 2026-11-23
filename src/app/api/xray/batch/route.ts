@@ -5,6 +5,9 @@ import {
   type BatchXRayItemInput,
   type BatchXRayItemResult,
 } from "@/lib/schemas";
+
+export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 import { checkRateLimit, getClientIp } from "@/lib/security/rateLimiter";
 import { SsrfBlockedError } from "@/lib/verifier/ssrfGuard";
 import { buildBatchSlackDigest, runSingleXRay } from "@/lib/xrayRunner";

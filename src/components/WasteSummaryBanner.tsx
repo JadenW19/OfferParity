@@ -3,6 +3,8 @@
 import { useState } from "react";
 import {
   AlertTriangle,
+  ArrowRight,
+  BellRing,
   Calculator,
   CheckCircle2,
   ChevronDown,
@@ -14,6 +16,7 @@ import type { OverallVerdict, XRayReport } from "@/lib/schemas";
 
 interface WasteSummaryBannerProps {
   report: XRayReport;
+  onOpenMonitorCta?: (report: XRayReport) => void;
 }
 
 function formatUsd(amount: number): string {
@@ -64,7 +67,10 @@ function getVerdictPresentation(verdict: OverallVerdict) {
   }
 }
 
-export function WasteSummaryBanner({ report }: WasteSummaryBannerProps) {
+export function WasteSummaryBanner({
+  report,
+  onOpenMonitorCta,
+}: WasteSummaryBannerProps) {
   const [showMathDetails, setShowMathDetails] = useState(false);
   const { overallStatus, waste, request, storefront, durationMs } = report;
   const presentation = getVerdictPresentation(overallStatus);
@@ -196,6 +202,34 @@ export function WasteSummaryBanner({ report }: WasteSummaryBannerProps) {
         <span className="font-semibold text-slate-200">Formula: </span>
         <code className="break-all text-sky-300">{waste.breakdown.formula}</code>
       </div>
+
+      {onOpenMonitorCta ? (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-sky-500/30 bg-sky-950/30 px-4 py-3">
+          <div className="flex items-center gap-2.5 text-xs text-slate-200">
+            <BellRing className="h-4 w-4 shrink-0 text-sky-400" aria-hidden="true" />
+            <span>
+              {overallStatus === "FAIL" && waste.estimatedDailyWaste > 0 ? (
+                <>
+                  Catch <strong className="text-white">{formatUsd(waste.estimatedDailyWaste)}/day</strong>{" "}
+                  offer leaks before they burn budget.
+                </>
+              ) : (
+                <>
+                  Offers break at 2 AM when hero sizes sell out or promos expire.
+                </>
+              )}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => onOpenMonitorCta(report)}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-sky-500 px-3.5 py-2 text-xs font-semibold text-slate-950 transition hover:bg-sky-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
+          >
+            <span>Monitor this URL hourly in Slack</span>
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+          </button>
+        </div>
+      ) : null}
 
       {showMathDetails ? (
         <div

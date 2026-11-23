@@ -1,10 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { FileSpreadsheet, Search, ShieldCheck, Zap } from "lucide-react";
 import { AlertExportPanel } from "@/components/AlertExportPanel";
 import { BatchAuditPanel } from "@/components/BatchAuditPanel";
 import { ClaimsComparisonCard } from "@/components/ClaimsComparisonCard";
+import {
+  MonitorCtaModal,
+  type MonitorCtaContext,
+} from "@/components/MonitorCtaModal";
 import { ParityDiffTable } from "@/components/ParityDiffTable";
 import {
   RecentScansBar,
@@ -16,6 +21,7 @@ import {
 import { ScenarioSelector } from "@/components/ScenarioSelector";
 import { WasteSummaryBanner } from "@/components/WasteSummaryBanner";
 import { XRayForm } from "@/components/XRayForm";
+import { trackEvent } from "@/lib/analytics";
 import { evaluateParity } from "@/lib/diff/parityEngine";
 import { calculateWaste } from "@/lib/diff/wasteCalculator";
 import { buildMarkdownReport, buildSlackAlert } from "@/lib/exporters/reportFormatters";
@@ -26,7 +32,9 @@ import {
 import { extractAdClaims } from "@/lib/parser/adClaimExtractor";
 import {
   FixtureScenarioIdSchema,
+  LeadPlanInterestSchema,
   XRayReportSchema,
+  type BatchXRayResponse,
   type DemoScenarioPreset,
   type FixtureScenarioId,
   type XRayReport,
@@ -124,6 +132,8 @@ export default function HomePage() {
   const [hasMounted, setHasMounted] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [monitorCtaContext, setMonitorCtaContext] =
+    useState<MonitorCtaContext | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const hydratedShareRef = useRef<boolean>(false);
 
@@ -168,6 +178,11 @@ export default function HomePage() {
 
         setReport(parsed.data);
         setRecentScans((prev) => saveRecentScanToStorage(prev, parsed.data));
+        trackEvent("xray_completed", {
+          verdict: parsed.data.overallStatus,
+          dailyWaste: parsed.data.waste.estimatedDailyWaste,
+          source: parsed.data.storefront.source,
+        });
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") {
           return;
@@ -190,6 +205,18 @@ export default function HomePage() {
       setRecentScans(loadRecentScansFromStorage());
 
       if (!hydratedShareRef.current) {
+        const params = new URLSearchParams(window.location.search);
+        const monitorPlan = params.get("monitor")?.trim() ?? "";
+        const parsedPlan = monitorPlan
+          ? LeadPlanInterestSchema.safeParse(monitorPlan)
+          : null;
+        if (parsedPlan?.success) {
+          setMonitorCtaContext({
+            sourceCta: "pricing_page_onboarding",
+            defaultPlan: parsedPlan.data,
+          });
+        }
+
         const shared = readSharedQueryParams();
         if (shared) {
           hydratedShareRef.current = true;
@@ -293,6 +320,37 @@ export default function HomePage() {
     setRecentScans([]);
   }
 
+  function handleOpenSingleMonitorCta(targetReport: XRayReport) {
+    trackEvent("monitor_cta_opened", {
+      source: "waste_banner",
+      verdict: targetReport.overallStatus,
+      dailyWaste: targetReport.waste.estimatedDailyWaste,
+    });
+    setMonitorCtaContext({
+      scannedUrl: targetReport.request.landingPageUrl,
+      dailyBudget: targetReport.request.dailyBudget,
+      dailyWaste: targetReport.waste.estimatedDailyWaste,
+      verdict: targetReport.overallStatus,
+      sourceCta: "waste_banner_monitor_cta",
+      defaultPlan: "growth",
+    });
+  }
+
+  function handleOpenBatchMonitorCta(batchResult: BatchXRayResponse) {
+    trackEvent("monitor_cta_opened", {
+      source: "batch_summary",
+      totalRows: batchResult.summary.totalRows,
+      dailyWaste: batchResult.summary.totalDailyWaste,
+    });
+    setMonitorCtaContext({
+      totalRows: batchResult.summary.totalRows,
+      dailyBudget: batchResult.summary.totalDailyBudget,
+      dailyWaste: batchResult.summary.totalDailyWaste,
+      sourceCta: "batch_summary_monitor_cta",
+      defaultPlan: "agency",
+    });
+  }
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <header className="border-b border-slate-800/90 bg-slate-950/90 backdrop-blur">
@@ -349,6 +407,22 @@ export default function HomePage() {
               <ShieldCheck className="h-4 w-4" aria-hidden="true" />
               <span>Zero Auth Walls · Deterministic Spend Audit</span>
             </div>
+
+            <nav aria-label="Secondary navigation" className="flex items-center gap-3 text-xs font-semibold">
+              <Link
+                href="/pricing"
+                onClick={() => trackEvent("pricing_cta_clicked", { from: "header" })}
+                className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-slate-200 transition hover:border-sky-400 hover:text-white"
+              >
+                Pricing
+              </Link>
+              <Link
+                href="/bot"
+                className="text-slate-400 transition hover:text-slate-200"
+              >
+                Bot Allowlist
+              </Link>
+            </nav>
           </div>
         </div>
       </header>
@@ -383,7 +457,10 @@ export default function HomePage() {
               onSubmit={handleSubmit}
             />
 
-            <WasteSummaryBanner report={report} />
+            <WasteSummaryBanner
+              report={report}
+              onOpenMonitorCta={handleOpenSingleMonitorCta}
+            />
 
             <ParityDiffTable checks={report.checks} />
 
@@ -395,9 +472,75 @@ export default function HomePage() {
             <AlertExportPanel report={report} />
           </>
         ) : (
-          <BatchAuditPanel onInspectReport={handleInspectReport} />
+          <BatchAuditPanel
+            onInspectReport={handleInspectReport}
+            onOpenBatchMonitorCta={handleOpenBatchMonitorCta}
+          />
         )}
+
+        <section
+          aria-label="How OfferParity protects ad spend"
+          className="grid gap-4 rounded-2xl border border-slate-800/90 bg-slate-900/50 p-5 sm:grid-cols-3 sm:p-6"
+        >
+          <div>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-sky-300">
+              100% Deterministic
+            </h2>
+            <p className="mt-1 text-xs leading-relaxed text-slate-300">
+              Pure-code extraction and live Shopify/JSON-LD verification—zero
+              LLM hallucinations or guessed prices.
+            </p>
+          </div>
+          <div>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-300">
+              Zero Ad-Account Risk
+            </h2>
+            <p className="mt-1 text-xs leading-relaxed text-slate-300">
+              Never requires Meta/TikTok write OAuth and never auto-pauses ads
+              or resets campaign learning phases.
+            </p>
+          </div>
+          <div>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-amber-300">
+              Built for Agencies &amp; DTC
+            </h2>
+            <p className="mt-1 text-xs leading-relaxed text-slate-300">
+              Audit 25 ads in seconds via CSV or upgrade to hourly Slack
+              regression alerts starting at $99/mo.{" "}
+              <Link href="/pricing" className="font-semibold text-sky-400 hover:underline">
+                View plans →
+              </Link>
+            </p>
+          </div>
+        </section>
       </main>
+
+      <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-500">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 sm:px-6">
+          <span>OfferParity · Deterministic Ad-to-Checkout Parity Verification</span>
+          <div className="flex items-center gap-4">
+            <Link href="/pricing" className="hover:text-slate-300">
+              Pricing
+            </Link>
+            <Link href="/bot" className="hover:text-slate-300">
+              OfferParityBot/1.0
+            </Link>
+            <Link href="/privacy" className="hover:text-slate-300">
+              Privacy
+            </Link>
+            <Link href="/terms" className="hover:text-slate-300">
+              Terms
+            </Link>
+          </div>
+        </div>
+      </footer>
+
+      <MonitorCtaModal
+        key={monitorCtaContext?.sourceCta ?? "closed"}
+        isOpen={monitorCtaContext !== null}
+        context={monitorCtaContext}
+        onClose={() => setMonitorCtaContext(null)}
+      />
     </div>
   );
 }

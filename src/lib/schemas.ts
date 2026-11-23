@@ -357,3 +357,40 @@ export const SlackWebhookRequestSchema = z.object({
     .optional(),
 });
 export type SlackWebhookRequest = z.infer<typeof SlackWebhookRequestSchema>;
+
+/**
+ * Inbound lead / waitlist capture payload (POST /api/leads).
+ */
+export const LeadPlanInterestSchema = z.enum(["growth", "agency"]);
+export type LeadPlanInterest = z.infer<typeof LeadPlanInterestSchema>;
+
+export const LeadCaptureRequestSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .email("Enter a valid work email address")
+    .max(254, "Email address is too long"),
+  companyName: z
+    .string()
+    .trim()
+    .max(120, "Company or agency name must be 120 characters or fewer")
+    .optional(),
+  scannedUrl: z
+    .string()
+    .trim()
+    .url("Scanned URL must be a valid http:// or https:// URL")
+    .max(2000, "Scanned URL is too long")
+    .optional(),
+  dailyBudget: z.number().finite().min(0).max(1_000_000).optional(),
+  dailyWaste: z.number().finite().min(0).max(1_000_000).optional(),
+  verdict: OverallVerdictSchema.optional(),
+  planInterest: LeadPlanInterestSchema.default("growth"),
+  sourceCta: z
+    .string()
+    .trim()
+    .min(1)
+    .max(80)
+    .default("waste_banner_monitor_cta"),
+  notes: z.string().trim().max(500).optional(),
+});
+export type LeadCaptureRequest = z.infer<typeof LeadCaptureRequestSchema>;
