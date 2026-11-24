@@ -253,4 +253,36 @@ describe("False-Alarm Prevention Regression Suite (Path C)", () => {
     expect(checks.find((c) => c.id === "variant_stock")?.status).toBe("FAIL");
     expect(waste.estimatedDailyWaste).toBe(850);
   });
+
+  it("downgrades ?variant= OOS on a pure size (e.g. XS) to WARN ($0 waste) when ad copy did not specify that size and other sizes are in stock", () => {
+    const claims = extractAdClaims(
+      "Your everyday uniform. Women's Seamless Crop Shorts - Slate Blue | Adanola",
+      "https://adanola.example.com/products/seamless-crop-shorts-slate-blue?variant=55554742845813&utm_source=meta&utm_medium=paid_social&utm_campaign=shorts"
+    );
+    const { checks, overallStatus } = evaluateParity(claims, {
+      url: "https://adanola.example.com/products/seamless-crop-shorts-slate-blue?variant=55554742845813",
+      finalUrl:
+        "https://adanola.example.com/products/seamless-crop-shorts-slate-blue?variant=55554742845813",
+      httpStatus: 200,
+      redirectChain: [],
+      wafStatus: "NONE",
+      title: "Seamless Crop Shorts - Slate Blue",
+      basePrice: 35,
+      compareAtPrice: null,
+      currency: "GBP",
+      inStock: true,
+      variants: [
+        { id: "55554742845813", title: "XS", price: 35, compareAtPrice: null, available: false, sku: "AD-XS" },
+        { id: "55554742878581", title: "S", price: 35, compareAtPrice: null, available: true, sku: "AD-S" },
+        { id: "55554742911349", title: "M", price: 35, compareAtPrice: null, available: true, sku: "AD-M" },
+      ],
+      promoVerification: null,
+      source: "shopify_js",
+    });
+
+    const waste = calculateWaste(checks, 500, overallStatus);
+    expect(overallStatus).toBe("WARN");
+    expect(checks.find((c) => c.id === "variant_stock")?.status).toBe("WARN");
+    expect(waste.estimatedDailyWaste).toBe(0);
+  });
 });

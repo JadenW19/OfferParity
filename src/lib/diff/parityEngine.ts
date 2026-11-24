@@ -30,6 +30,13 @@ const SIZE_ALIASES: Record<string, string> = {
   "3xl": "xxxl",
 };
 
+const PURE_SIZE_VARIANT_PATTERN =
+  /^(?:xxxs|xxs|xs|s|m|l|xl|xxl|xxxl|xxxxl|2xl|3xl|4xl|xsmall|small|medium|large|xlarge|xxlarge|one\s*size|os|\d{1,2}(?:\.\d)?)$/i;
+
+function isPureSizeVariant(title: string): boolean {
+  return PURE_SIZE_VARIANT_PATTERN.test(title.trim());
+}
+
 function roundCurrency(value: number): number {
   return Math.round((value + Number.EPSILON) * 100) / 100;
 }
@@ -472,6 +479,24 @@ function evaluateVariantStock(
     if (storefront.variants.length > 0) {
       if (matchedVariant) {
         if (!matchedVariant.available) {
+          const inStockCount = storefront.variants.filter((v) => v.available).length;
+          if (
+            claims.variantName === null &&
+            claims.variantId !== null &&
+            inStockCount > 0 &&
+            isPureSizeVariant(matchedVariant.title)
+          ) {
+            return {
+              id: "variant_stock",
+              label: "Variant & Inventory Availability",
+              status: "WARN",
+              expected: expectedStr,
+              actual: `Pre-selected ?variant=${claims.variantId} ("${matchedVariant.title}") is OUT OF STOCK, but ${inStockCount}/${storefront.variants.length} other sizes remain in stock`,
+              impactWeight: 0.1,
+              remediation: `Consider updating the ad's ?variant= parameter to an in-stock default size (ad copy did not promise "${matchedVariant.title}").`,
+            };
+          }
+
           return {
             id: "variant_stock",
             label: "Variant & Inventory Availability",
