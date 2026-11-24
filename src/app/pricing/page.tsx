@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Zap } from "lucide-react";
+import { Zap } from "lucide-react";
+import {
+  PricingGridWithCheckout,
+  type PricingTierCardData,
+} from "@/components/PricingTierActions";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const metadata: Metadata = {
@@ -14,21 +18,7 @@ const GROWTH_STRIPE_LINK =
 const AGENCY_STRIPE_LINK =
   process.env.NEXT_PUBLIC_STRIPE_AGENCY_LINK?.trim() || "";
 
-interface TierCard {
-  id: "free" | "growth" | "agency";
-  name: string;
-  price: string;
-  cadence: string;
-  audience: string;
-  badge?: string;
-  features: string[];
-  ctaLabel: string;
-  ctaHref: string;
-  external: boolean;
-  highlighted: boolean;
-}
-
-const TIERS: TierCard[] = [
+const TIERS: PricingTierCardData[] = [
   {
     id: "free",
     name: "Broken-Offer X-Ray",
@@ -156,84 +146,7 @@ export default function PricingPage() {
           </p>
         </section>
 
-        <section
-          aria-label="Pricing plans"
-          className="grid gap-6 lg:grid-cols-3"
-        >
-          {TIERS.map((tier) => (
-            <div
-              key={tier.id}
-              className={`flex flex-col justify-between rounded-2xl border p-6 ${
-                tier.highlighted
-                  ? "border-[var(--text-primary)] bg-[var(--bg-surface)]"
-                  : "border-[var(--border-hairline)] bg-[var(--bg-surface)]"
-              }`}
-            >
-              <div>
-                <div className="flex items-center justify-between gap-2">
-                  <h2 className="text-lg font-bold text-[var(--text-primary)]">{tier.name}</h2>
-                  {tier.badge ? (
-                    <span className="rounded-full border border-[var(--accent-soft-border)] bg-[var(--accent-soft)] px-2.5 py-0.5 text-[11px] font-semibold text-[var(--accent-soft-text)]">
-                      {tier.badge}
-                    </span>
-                  ) : null}
-                </div>
-
-                <div className="mt-4 flex items-baseline gap-1">
-                  <span className="font-mono text-4xl font-bold tracking-tight text-[var(--text-primary)]">
-                    {tier.price}
-                  </span>
-                  <span className="text-sm text-[var(--text-muted)]">{tier.cadence}</span>
-                </div>
-                <p className="mt-2 text-xs leading-relaxed text-[var(--text-muted)]">
-                  {tier.audience}
-                </p>
-
-                <ul className="mt-6 space-y-2.5 text-xs text-[var(--text-primary)]">
-                  {tier.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2">
-                      <CheckCircle2
-                        className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600"
-                        aria-hidden="true"
-                      />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="mt-8">
-                {tier.external ? (
-                  <a
-                    href={tier.ctaHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition ${
-                      tier.highlighted
-                        ? "bg-[var(--accent-primary)] text-[var(--accent-ink)] hover:bg-[var(--accent-primary-hover)]"
-                        : "border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] text-[var(--text-primary)] hover:border-[var(--border-strong)]"
-                    }`}
-                  >
-                    <span>{tier.ctaLabel}</span>
-                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </a>
-                ) : (
-                  <Link
-                    href={tier.ctaHref}
-                    className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition ${
-                      tier.highlighted
-                        ? "bg-[var(--accent-primary)] text-[var(--accent-ink)] hover:bg-[var(--accent-primary-hover)]"
-                        : "border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] text-[var(--text-primary)] hover:border-[var(--border-strong)]"
-                    }`}
-                  >
-                    <span>{tier.ctaLabel}</span>
-                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </Link>
-                )}
-              </div>
-            </div>
-          ))}
-        </section>
+        <PricingGridWithCheckout tiers={TIERS} />
 
         <section
           aria-label="Frequently asked questions"

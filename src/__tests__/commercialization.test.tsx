@@ -1,10 +1,12 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { POST as postBillingCheckout } from "@/app/api/billing/checkout/route";
 import { POST as postLead } from "@/app/api/leads/route";
 import BotPage from "@/app/bot/page";
 import HomePage from "@/app/page";
 import PricingPage from "@/app/pricing/page";
+import { BILLING_PLANS, resolveStripePriceId } from "@/lib/billing/plans";
 import { resetRateLimiterForTests } from "@/lib/security/rateLimiter";
 
 afterEach(() => {
@@ -159,5 +161,27 @@ describe("Non-Blocking Conversion CTA & Commercial Pages", () => {
         name: /OfferParityBot\/1\.0 Verification Guide/i,
       })
     ).toBeInTheDocument();
+  });
+});
+
+describe("POST /api/billing/checkout", () => {
+  it("resolves Growth and Agency Stripe Price IDs and returns 503 when STRIPE_SECRET_KEY is unset", async () => {
+    expect(BILLING_PLANS.growth.priceUsd).toBe(99);
+    expect(BILLING_PLANS.agency.priceUsd).toBe(249);
+    expect(resolveStripePriceId("growth")).toBe("price_1Uf6O4EtiOWkP8V8hjojfta9");
+    expect(resolveStripePriceId("agency")).toBe("price_1Uf6OBEtiOWkP8V8KvQCd9yh");
+
+    vi.stubEnv("STRIPE_SECRET_KEY", "");
+    const res = await postBillingCheckout(
+      new Request("http://localhost:3000/api/billing/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: "growth" }),
+      })
+    );
+    expect(res.status).toBe(503);
+    const body = (await res.json()) as { code: string };
+    expect(body.code).toBe("STRIPE_NOT_CONFIGURED");
+    vi.unstubAllEnvs();
   });
 });

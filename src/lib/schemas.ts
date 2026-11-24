@@ -394,3 +394,17 @@ export const LeadCaptureRequestSchema = z.object({
   notes: z.string().trim().max(500).optional(),
 });
 export type LeadCaptureRequest = z.infer<typeof LeadCaptureRequestSchema>;
+
+/**
+ * Stripe on-site Checkout Session request payload (POST /api/billing/checkout).
+ */
+export const BillingCheckoutRequestSchema = z.object({
+  plan: LeadPlanInterestSchema,
+  customerEmail: z
+    .string()
+    .trim()
+    .email("Enter a valid email address")
+    .max(254)
+    .optional(),
+});
+export type BillingCheckoutRequest = z.infer<typeof BillingCheckoutRequestSchema>;
