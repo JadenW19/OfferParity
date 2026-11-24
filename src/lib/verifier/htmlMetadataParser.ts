@@ -506,8 +506,9 @@ function detectSubscriptionAndBundleSignals(
   } else if (lowerHtml.includes("stay.ai") || lowerHtml.includes("stayai")) {
     provider = "Stay AI";
   } else if (
-    $('input[name="selling_plan"], select[name="selling_plan"]').length > 0 ||
-    lowerHtml.includes("selling_plan_groups")
+    $('input[name="selling_plan"][value]:not([value=""]), select[name="selling_plan"] option[value]:not([value=""])')
+      .length > 0 ||
+    /"selling_plan_groups"\s*:\s*\[\s*\{/i.test(html)
   ) {
     provider = "Shopify Subscriptions";
   }
@@ -516,11 +517,14 @@ function detectSubscriptionAndBundleSignals(
   $clone("script, style, noscript").remove();
   const visibleText = $clone("body").text().replace(/\s+/g, " ").trim();
 
-  const subPhraseMatch =
-    /\b(?:subscribe\s*(?:&|and)\s*save|autoship(?:\s*(?:&|and)\s*save)?|auto[-\s]?deliver|monthly\s+subscription)\b/i.exec(
-      visibleText
-    );
-  const detected = provider !== null || subPhraseMatch !== null;
+  const subPhraseRegex =
+    /\b(?:subscribe\s*(?:&|and)\s*save|autoship(?:\s*(?:&|and)\s*save)?|auto[-\s]?deliver|monthly\s+subscription)\b/gi;
+  const subMatches: RegExpExecArray[] = [];
+  let subMatch: RegExpExecArray | null;
+  while ((subMatch = subPhraseRegex.exec(visibleText)) !== null) {
+    subMatches.push(subMatch);
+  }
+  const detected = provider !== null || subMatches.length > 0;
 
   if (!detected) {
     return {
@@ -534,19 +538,26 @@ function detectSubscriptionAndBundleSignals(
   let lowestPrice: number | null = null;
   let maxDiscountPct: number | null = null;
 
-  if (subPhraseMatch) {
-    const start = Math.max(0, subPhraseMatch.index - 80);
-    const end = Math.min(visibleText.length, subPhraseMatch.index + 240);
+  const perUnitSuffixRegex =
+    /^\s*(?:\/|per\s+)(?:day|d\b|serving|pack|gumm(?:y|ies)|scoop|dose|oz|ml|unit|count|bar|capsule|pill|tablet|bottle|stick|meal|wk|week|pc|piece|item)\b/i;
+
+  for (const match of subMatches) {
+    const start = Math.max(0, match.index - 80);
+    const end = Math.min(visibleText.length, match.index + 240);
     const snippet = visibleText.slice(start, end);
 
     const priceRegex = /(?:[$£€]|US\$|CA\$|AU\$)\s*(\d{1,4}(?:\.\d{2})?)/g;
     let pm: RegExpExecArray | null;
     while ((pm = priceRegex.exec(snippet)) !== null) {
+      const trailing = snippet.slice(pm.index + pm[0].length, pm.index + pm[0].length + 24);
+      if (perUnitSuffixRegex.test(trailing)) {
+        continue;
+      }
       const val = parseNumericPrice(pm[1]);
       if (
         val !== null &&
         val > 0 &&
-        (basePrice === null || val < basePrice) &&
+        (basePrice === null || (val < basePrice && (basePrice < 15 || val >= basePrice * 0.15))) &&
         (lowestPrice === null || val < lowestPrice)
       ) {
         lowestPrice = val;
@@ -593,16 +604,34 @@ function detectStorefrontLocalization(
     $('select[name="currency_code"], select[name="country_code"], input[name="country_code"]')
       .length > 0;
 
+  const hreflangRegions = new Set<string>();
+  $('link[rel="alternate"][hreflang]').each((_, el) => {
+    const lang = $(el).attr("hreflang")?.trim().toLowerCase();
+    if (lang && lang !== "x-default" && /^[a-z]{2}-[a-z]{2}$/.test(lang)) {
+      hreflangRegions.add(lang);
+    }
+  });
+  const hasMultipleRegionalAlternates = hreflangRegions.size >= 2;
+
   const lowerHtml = html.toLowerCase();
   const hasGeoApp =
     lowerHtml.includes("global-e") ||
     lowerHtml.includes("globale") ||
     lowerHtml.includes("shopify-markets") ||
-    lowerHtml.includes("currency-selector");
+    lowerHtml.includes("currency-selector") ||
+    lowerHtml.includes("currency-switcher") ||
+    lowerHtml.includes("country-selector") ||
+    lowerHtml.includes("geolizr") ||
+    lowerHtml.includes("orbe") ||
+    lowerHtml.includes("transcy");
 
   return {
     detectedCountry,
-    multiCurrencyStore: hasNonUnitExchangeRate || hasLocalizationForm || hasGeoApp,
+    multiCurrencyStore:
+      hasNonUnitExchangeRate ||
+      hasLocalizationForm ||
+      hasMultipleRegionalAlternates ||
+      hasGeoApp,
     requestedCurrency: null,
   };
 }

@@ -245,18 +245,21 @@ function evaluatePriceParity(
     const liveDisplay =
       effectivePrice !== null ? formatMoney(effectivePrice, liveCurrency) : liveCurrency;
 
-    if (
-      storefront.source !== "fixture" &&
-      storefront.localization?.multiCurrencyStore === true
-    ) {
+    if (storefront.source !== "fixture") {
+      const countryNote = storefront.localization?.detectedCountry
+        ? ` (server market: ${storefront.localization.detectedCountry})`
+        : "";
+      const storeTypeNote = storefront.localization?.multiCurrencyStore
+        ? "on a multi-currency store"
+        : `from cloud scanner region${countryNote}`;
       return {
         id: "price_parity",
         label: "Price & Currency Parity",
         status: "WARN",
         expected: `Currency ${adCurrency} (${adDisplay})`,
-        actual: `Geo-IP localized currency: storefront served ${liveCurrency} (${liveDisplay}) on a multi-currency store`,
+        actual: `Geo-IP / market currency difference: storefront served ${liveCurrency} (${liveDisplay}) ${storeTypeNote}`,
         impactWeight: 0.05,
-        remediation: `Verify ${adCurrency} localized pricing from the target ad market (server region triggered ${liveCurrency} market routing).`,
+        remediation: `Verify ${adCurrency} localized pricing from the target ad market (cloud scanner received ${liveCurrency} pricing).`,
       };
     }
 

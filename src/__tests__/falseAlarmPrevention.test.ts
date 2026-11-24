@@ -34,7 +34,7 @@ describe("False-Alarm Prevention Regression Suite (Path C)", () => {
       return new Response(
         `<!doctype html><html><head><title>Daily Greens</title><meta property="og:price:currency" content="USD" /></head>
         <body>
-          <div>Autoship and Save: Subscribe &amp; Save $29.99 $66.65 — Free Shipping Today</div>
+          <div>Autoship and Save: Subscribe &amp; Save $29.99 $66.65 ($1.07/day) — Free Shipping Today</div>
         </body></html>`,
         { status: 200, headers: { "Content-Type": "text/html" } }
       );
@@ -55,6 +55,47 @@ describe("False-Alarm Prevention Regression Suite (Path C)", () => {
     expect(report.overallStatus).toBe("WARN");
     expect(report.waste.estimatedDailyWaste).toBe(0);
     expect(report.checks.find((c) => c.id === "discount_math")?.status).toBe("WARN");
+  });
+
+  it("does NOT falsely mark standard Shopify stores with empty selling_plan_groups:[] as subscription stores", async () => {
+    const mockFetch: typeof fetch = async (input) => {
+      const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+      if (url.endsWith(".js")) {
+        return new Response(
+          JSON.stringify({
+            title: "Pirouette Skort",
+            price: 6000,
+            available: true,
+            selling_plan_groups: [],
+            variants: [{ id: 1, title: "Black / M", price: 6000, available: true }],
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } }
+        );
+      }
+      return new Response(
+        `<!doctype html><html><head><title>Pirouette Skort</title><meta property="og:price:currency" content="USD" /></head>
+        <body>
+          <form><input type="hidden" name="selling_plan" value="" /></form>
+          <script>window.__PRODUCT__ = {"selling_plan_groups":[]};</script>
+        </body></html>`,
+        { status: 200, headers: { "Content-Type": "text/html" } }
+      );
+    };
+
+    const report = await runSingleXRay(
+      {
+        adCopy: "Grab the Pirouette Skort today for $45.00.",
+        landingPageUrl:
+          "https://skort.example.com/products/pirouette-skort?utm_source=meta&utm_medium=paid_social&utm_campaign=skort",
+        dailyBudget: 500,
+      },
+      { fetchImpl: mockFetch, lookupFn: mockPublicDns }
+    );
+
+    expect(report.storefront.subscriptionPricing?.detected).toBe(false);
+    expect(report.overallStatus).toBe("FAIL");
+    expect(report.checks.find((c) => c.id === "price_parity")?.status).toBe("FAIL");
+    expect(report.waste.estimatedDailyWaste).toBe(200);
   });
 
   it("PASSes price_parity and discount_math when Shopify selling_plan_allocations match advertised subscription offer", async () => {
