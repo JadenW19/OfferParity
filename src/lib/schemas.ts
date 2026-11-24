@@ -173,6 +173,28 @@ export const RedirectHopSchema = z.object({
 export type RedirectHop = z.infer<typeof RedirectHopSchema>;
 
 /**
+ * Deterministic subscription / bundle widget pricing signals extracted from
+ * Shopify selling_plan_groups, selling_plan_allocations, or storefront HTML.
+ */
+export const SubscriptionPricingSchema = z.object({
+  detected: z.boolean(),
+  lowestPrice: z.number().nullable(),
+  maxDiscountPct: z.number().nullable(),
+  provider: z.string().nullable(),
+});
+export type SubscriptionPricing = z.infer<typeof SubscriptionPricingSchema>;
+
+/**
+ * Storefront multi-currency / geo-IP localization signals.
+ */
+export const StorefrontLocalizationSchema = z.object({
+  detectedCountry: z.string().nullable(),
+  multiCurrencyStore: z.boolean(),
+  requestedCurrency: z.string().nullable(),
+});
+export type StorefrontLocalization = z.infer<typeof StorefrontLocalizationSchema>;
+
+/**
  * Normalized storefront ground-truth snapshot (from fixtures or live HTTP verification).
  */
 export const StorefrontSnapshotSchema = z.object({
@@ -191,6 +213,8 @@ export const StorefrontSnapshotSchema = z.object({
   promoVerification: PromoVerificationSchema.nullable(),
   source: StorefrontSourceSchema,
   fetchError: z.string().nullable().optional(),
+  subscriptionPricing: SubscriptionPricingSchema.optional(),
+  localization: StorefrontLocalizationSchema.optional(),
 });
 export type StorefrontSnapshot = z.infer<typeof StorefrontSnapshotSchema>;
 

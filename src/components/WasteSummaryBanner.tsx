@@ -40,7 +40,7 @@ function getVerdictPresentation(verdict: OverallVerdict) {
     case "FAIL":
       return {
         label: "FAIL",
-        headline: "Paid Spend Burn Detected — Broken Offer Parity",
+        headline: "Confirmed Offer Break — Paid Spend Burn Detected",
         containerClass: "border-[var(--status-fail-border)] bg-[var(--status-fail-bg)]",
         badgeClass: "border-[var(--status-fail-border)] bg-[var(--status-fail-bg)] text-[var(--status-fail-text)]",
         Icon: XCircle,
@@ -58,7 +58,7 @@ function getVerdictPresentation(verdict: OverallVerdict) {
     case "WARN":
       return {
         label: "WARN",
-        headline: "Partial Verification — At-Risk or Unverified Signals Found",
+        headline: "Needs Manual Check — Dynamic Pricing, Promo, or Localization Detected",
         containerClass: "border-[var(--status-warn-border)] bg-[var(--status-warn-bg)]",
         badgeClass: "border-[var(--status-warn-border)] bg-[var(--status-warn-bg)] text-[var(--status-warn-text)]",
         Icon: AlertTriangle,
@@ -99,8 +99,18 @@ export function WasteSummaryBanner({
                 {durationMs.toFixed(0)} ms
               </span>
               {storefront.wafProvider ? (
-                <span className="rounded-md border border-amber-500/40 bg-amber-500/15 px-2 py-0.5 text-xs font-medium text-amber-700">
+                <span className="rounded-md border border-[var(--status-warn-border)] bg-[var(--status-warn-bg)] px-2 py-0.5 text-xs font-medium text-[var(--status-warn-text)]">
                   WAF: {storefront.wafProvider}
+                </span>
+              ) : null}
+              {storefront.subscriptionPricing?.detected ? (
+                <span className="rounded-md border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-2 py-0.5 font-mono text-[11px] font-medium text-[var(--text-muted)]">
+                  {storefront.subscriptionPricing.provider ?? "Subscription Widget"}
+                </span>
+              ) : null}
+              {storefront.localization?.multiCurrencyStore ? (
+                <span className="rounded-md border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-2 py-0.5 font-mono text-[11px] font-medium text-[var(--text-muted)]">
+                  Multi-Currency{storefront.localization.detectedCountry ? ` (${storefront.localization.detectedCountry})` : ""}
                 </span>
               ) : null}
             </div>

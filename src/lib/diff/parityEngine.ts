@@ -244,6 +244,22 @@ function evaluatePriceParity(
       claims.advertisedPrice !== null ? formatMoney(claims.advertisedPrice, adCurrency) : adCurrency;
     const liveDisplay =
       effectivePrice !== null ? formatMoney(effectivePrice, liveCurrency) : liveCurrency;
+
+    if (
+      storefront.source !== "fixture" &&
+      storefront.localization?.multiCurrencyStore === true
+    ) {
+      return {
+        id: "price_parity",
+        label: "Price & Currency Parity",
+        status: "WARN",
+        expected: `Currency ${adCurrency} (${adDisplay})`,
+        actual: `Geo-IP localized currency: storefront served ${liveCurrency} (${liveDisplay}) on a multi-currency store`,
+        impactWeight: 0.05,
+        remediation: `Verify ${adCurrency} localized pricing from the target ad market (server region triggered ${liveCurrency} market routing).`,
+      };
+    }
+
     return {
       id: "price_parity",
       label: "Price & Currency Parity",
@@ -329,6 +345,34 @@ function evaluatePriceParity(
   }
 
   if (priceDiff > PRICE_TOLERANCE) {
+    const subPricing = storefront.subscriptionPricing;
+    if (subPricing?.detected) {
+      if (
+        subPricing.lowestPrice !== null &&
+        subPricing.lowestPrice - claims.advertisedPrice <= PRICE_TOLERANCE
+      ) {
+        return {
+          id: "price_parity",
+          label: "Price & Currency Parity",
+          status: "PASS",
+          expected: expectedPriceStr,
+          actual: `${formatMoney(subPricing.lowestPrice, displayCurrency)} via ${subPricing.provider ?? "Subscribe & Save"} (one-time: ${effectivePriceStr})`,
+          impactWeight: 0,
+          remediation: "No action needed.",
+        };
+      }
+
+      return {
+        id: "price_parity",
+        label: "Price & Currency Parity",
+        status: "WARN",
+        expected: expectedPriceStr,
+        actual: `One-time price is ${effectivePriceStr}, but ${subPricing.provider ?? "Subscribe & Save"} widget detected`,
+        impactWeight: 0.1,
+        remediation: `Verify that the live ${subPricing.provider ?? "subscription/bundle"} selector honors ${expectedPriceStr}.`,
+      };
+    }
+
     const promoNote =
       claims.promoCode && storefront.promoVerification?.state === "EXPIRED"
         ? ` (promo ${claims.promoCode} expired)`
@@ -447,12 +491,16 @@ function evaluateVariantStock(
         };
       }
 
+      const truncationNote =
+        storefront.variants.length >= 250
+          ? `${storefront.variants.length}+ variants — Shopify .js limit reached`
+          : `${storefront.variants.length} variants checked`;
       return {
         id: "variant_stock",
         label: "Variant & Inventory Availability",
         status: "WARN",
         expected: expectedStr,
-        actual: `No storefront variant matched ${claimedVariantDesc} (${storefront.variants.length} variants checked)`,
+        actual: `No storefront variant matched ${claimedVariantDesc} (${truncationNote})`,
         impactWeight: 0.2,
         remediation:
           "Confirm the advertised color/size or ?variant= ID exists on the landing page.",
@@ -625,6 +673,52 @@ function evaluateDiscountMath(
       impactWeight: 0.1,
       remediation: `Confirm in checkout that ${claims.promoCode} delivers the promised ${expectedStr}.`,
     };
+  }
+
+  const subPricing = storefront.subscriptionPricing;
+  if (subPricing?.detected) {
+    const subPctFromPrice =
+      compareAt !== null &&
+      compareAt > 0 &&
+      subPricing.lowestPrice !== null &&
+      subPricing.lowestPrice < compareAt
+        ? ((compareAt - subPricing.lowestPrice) / compareAt) * 100
+        : null;
+    const bestSubPct = Math.max(
+      subPricing.maxDiscountPct ?? 0,
+      subPctFromPrice ?? 0
+    );
+
+    if (bestSubPct > 0 && claims.discountPct - bestSubPct <= DISCOUNT_TOLERANCE_PP) {
+      return {
+        id: "discount_math",
+        label: "Discount Math Accuracy",
+        status: "PASS",
+        expected: expectedStr,
+        actual: `${subPricing.provider ?? "Subscribe & Save"} offers ${bestSubPct.toFixed(1)}% off`,
+        impactWeight: 0,
+        remediation: "No action needed.",
+      };
+    }
+
+    if (
+      compareAt === null ||
+      compareAt <= 0 ||
+      effectivePrice === null ||
+      claims.discountPct - Math.max(0, ((compareAt - effectivePrice) / compareAt) * 100) >
+        DISCOUNT_TOLERANCE_PP
+    ) {
+      return {
+        id: "discount_math",
+        label: "Discount Math Accuracy",
+        status: "WARN",
+        expected: expectedStr,
+        actual: `${subPricing.provider ?? "Subscribe & Save"} widget detected; static one-time metadata does not expose the full ${expectedStr} bundle/subscription discount`,
+        impactWeight: 0.1,
+        remediation:
+          "Verify dynamic Subscribe & Save or multi-pack bundle discount tiers manually in a browser.",
+      };
+    }
   }
 
   if (compareAt === null || compareAt <= 0 || effectivePrice === null) {

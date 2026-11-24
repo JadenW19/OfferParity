@@ -41,7 +41,12 @@ const NON_VARIANT_IN_WORDS = new Set([
   "stock",
   "size",
   "sizes",
-  "all",
+  "colors",
+  "colours",
+  "shades",
+  "flavors",
+  "flavours",
+  "styles",
   "time",
   "usa",
   "us",
@@ -541,9 +546,14 @@ function extractVariantFromAdCopy(adCopy: string): {
     };
   }
 
+  const adWithoutSizeRanges = adCopy.replace(
+    /\bSizes?\s+(?:XXS|XS|S|M|L|XL|XXL|2XL|3XL|4XL|Small|Medium|Large|\d{1,2}(?:\.\d)?)\s*(?:to|through|[-–—])\s*(?:XXS|XS|S|M|L|XL|XXL|2XL|3XL|4XL|Small|Medium|Large|\d{1,2}(?:\.\d)?)\b/gi,
+    ""
+  );
+
   const sizeMatch =
     /\bSize\s+(XXS|XS|S|M|L|XL|XXL|2XL|3XL|4XL|Small|Medium|Large|X-Large|\d{1,2}(?:\.\d)?)\b/i.exec(
-      adCopy
+      adWithoutSizeRanges
     );
   if (sizeMatch && sizeMatch[0]) {
     return {
@@ -770,11 +780,11 @@ function extractUtmParams(parsedUrl: URL | null): {
   const signal: ClaimSignal | null =
     foundPairs.length > 0
       ? {
-          field: "utmParams",
-          source: "landing_url",
-          rawMatch: foundPairs.join("&"),
-          confidence: "high",
-        }
+        field: "utmParams",
+        source: "landing_url",
+        rawMatch: foundPairs.join("&"),
+        confidence: "high",
+      }
       : null;
 
   return { utmParams, signal };

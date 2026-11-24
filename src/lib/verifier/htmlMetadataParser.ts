@@ -1,7 +1,9 @@
 import * as cheerio from "cheerio";
 import type {
   PromoVerification,
+  StorefrontLocalization,
   StorefrontVariant,
+  SubscriptionPricing,
 } from "@/lib/schemas";
 
 export interface ParsedHtmlMetadata {
@@ -12,6 +14,8 @@ export interface ParsedHtmlMetadata {
   inStock: boolean | null;
   variants: StorefrontVariant[];
   promoVerification: PromoVerification | null;
+  subscriptionPricing: SubscriptionPricing;
+  localization: StorefrontLocalization;
   source: "json_ld" | "microdata" | "opengraph" | "http_only";
 }
 
@@ -483,6 +487,126 @@ function detectOnPagePromo(
   };
 }
 
+function detectSubscriptionAndBundleSignals(
+  $: cheerio.CheerioAPI,
+  html: string,
+  basePrice: number | null
+): SubscriptionPricing {
+  const lowerHtml = html.toLowerCase();
+  let provider: string | null = null;
+
+  if (lowerHtml.includes("rechargepayments") || lowerHtml.includes("rc-widget")) {
+    provider = "Recharge";
+  } else if (lowerHtml.includes("skio-plan-picker") || lowerHtml.includes("skio.com")) {
+    provider = "Skio";
+  } else if (lowerHtml.includes("loop-subscription") || lowerHtml.includes("loopwork")) {
+    provider = "Loop";
+  } else if (lowerHtml.includes("appstle")) {
+    provider = "Appstle";
+  } else if (lowerHtml.includes("stay.ai") || lowerHtml.includes("stayai")) {
+    provider = "Stay AI";
+  } else if (
+    $('input[name="selling_plan"], select[name="selling_plan"]').length > 0 ||
+    lowerHtml.includes("selling_plan_groups")
+  ) {
+    provider = "Shopify Subscriptions";
+  }
+
+  const $clone = cheerio.load(html);
+  $clone("script, style, noscript").remove();
+  const visibleText = $clone("body").text().replace(/\s+/g, " ").trim();
+
+  const subPhraseMatch =
+    /\b(?:subscribe\s*(?:&|and)\s*save|autoship(?:\s*(?:&|and)\s*save)?|auto[-\s]?deliver|monthly\s+subscription)\b/i.exec(
+      visibleText
+    );
+  const detected = provider !== null || subPhraseMatch !== null;
+
+  if (!detected) {
+    return {
+      detected: false,
+      lowestPrice: null,
+      maxDiscountPct: null,
+      provider: null,
+    };
+  }
+
+  let lowestPrice: number | null = null;
+  let maxDiscountPct: number | null = null;
+
+  if (subPhraseMatch) {
+    const start = Math.max(0, subPhraseMatch.index - 80);
+    const end = Math.min(visibleText.length, subPhraseMatch.index + 240);
+    const snippet = visibleText.slice(start, end);
+
+    const priceRegex = /(?:[$£€]|US\$|CA\$|AU\$)\s*(\d{1,4}(?:\.\d{2})?)/g;
+    let pm: RegExpExecArray | null;
+    while ((pm = priceRegex.exec(snippet)) !== null) {
+      const val = parseNumericPrice(pm[1]);
+      if (
+        val !== null &&
+        val > 0 &&
+        (basePrice === null || val < basePrice) &&
+        (lowestPrice === null || val < lowestPrice)
+      ) {
+        lowestPrice = val;
+      }
+    }
+
+    const pctRegex = /(\d{1,2})\s*%\s*off/gi;
+    let pctMatch: RegExpExecArray | null;
+    while ((pctMatch = pctRegex.exec(snippet)) !== null) {
+      const pct = Number(pctMatch[1]);
+      if (Number.isFinite(pct) && pct > 0 && pct <= 90) {
+        if (maxDiscountPct === null || pct > maxDiscountPct) {
+          maxDiscountPct = pct;
+        }
+      }
+    }
+  }
+
+  return {
+    detected: true,
+    lowestPrice,
+    maxDiscountPct,
+    provider: provider ?? "On-page Subscribe & Save",
+  };
+}
+
+function detectStorefrontLocalization(
+  $: cheerio.CheerioAPI,
+  html: string
+): StorefrontLocalization {
+  const countryMatch =
+    /Shopify\.country\s*=\s*["']([A-Z]{2})["']/i.exec(html) ??
+    /["']country_code["']\s*:\s*["']([A-Z]{2})["']/i.exec(html);
+  const detectedCountry = countryMatch?.[1] ? countryMatch[1].toUpperCase() : null;
+
+  const rateMatch =
+    /Shopify\.currency\s*=\s*\{[^}]*["']rate["']\s*:\s*["']?([0-9.]+)["']?/i.exec(html);
+  const rateNum = rateMatch?.[1] ? Number(rateMatch[1]) : null;
+  const hasNonUnitExchangeRate =
+    rateNum !== null && Number.isFinite(rateNum) && Math.abs(rateNum - 1) > 0.001;
+
+  const hasLocalizationForm =
+    $('form[action*="/localization"]').length > 0 ||
+    $('select[name="currency_code"], select[name="country_code"], input[name="country_code"]')
+      .length > 0;
+
+  const lowerHtml = html.toLowerCase();
+  const hasGeoApp =
+    lowerHtml.includes("global-e") ||
+    lowerHtml.includes("globale") ||
+    lowerHtml.includes("shopify-markets") ||
+    lowerHtml.includes("currency-selector");
+
+  return {
+    detectedCountry,
+    multiCurrencyStore: hasNonUnitExchangeRate || hasLocalizationForm || hasGeoApp,
+    requestedCurrency: null,
+  };
+}
+
 function extractProductFromMicrodata($: cheerio.CheerioAPI): {
   title: string | null;
   basePrice: number | null;
@@ -649,9 +773,11 @@ export function parseHtmlStorefrontMetadata(
         ? "opengraph"
         : "http_only";
 
+  const resolvedBasePrice = jsonLd.basePrice ?? microdata?.basePrice ?? ogPrice;
+
   return {
     title: jsonLd.title ?? microdata?.title ?? ogTitle,
-    basePrice: jsonLd.basePrice ?? microdata?.basePrice ?? ogPrice,
+    basePrice: resolvedBasePrice,
     compareAtPrice:
       jsonLd.compareAtPrice ?? microdata?.compareAtPrice ?? ogCompareAt,
     currency: jsonLd.currency ?? microdata?.currency ?? ogCurrency,
@@ -661,6 +787,8 @@ export function parseHtmlStorefrontMetadata(
         ? jsonLd.variants
         : (microdata?.variants ?? []),
     promoVerification: detectOnPagePromo($, promoCode),
+    subscriptionPricing: detectSubscriptionAndBundleSignals($, html, resolvedBasePrice),
+    localization: detectStorefrontLocalization($, html),
     source,
   };
 }

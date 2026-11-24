@@ -31,6 +31,7 @@ export async function runSingleXRay(
     landingPageUrl: request.landingPageUrl,
     fixtureId: request.fixtureId,
     promoCode: extractedClaims.promoCode,
+    expectedCurrency: extractedClaims.currency,
     fetchImpl: options?.fetchImpl,
     lookupFn: options?.lookupFn,
     timeoutMs: options?.timeoutMs,

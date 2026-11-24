@@ -3,6 +3,7 @@ import type {
   RedirectHop,
   StorefrontSnapshot,
   StorefrontVariant,
+  SubscriptionPricing,
 } from "@/lib/schemas";
 import { resolveFixtureSnapshot } from "@/lib/fixtures/demoScenarios";
 import { parseHtmlStorefrontMetadata } from "@/lib/verifier/htmlMetadataParser";
@@ -23,9 +24,25 @@ export interface VerifyStorefrontInput {
   landingPageUrl: string;
   fixtureId?: FixtureScenarioId;
   promoCode?: string | null;
+  expectedCurrency?: string | null;
   fetchImpl?: typeof fetch;
   lookupFn?: DnsLookupFn;
   timeoutMs?: number;
+}
+
+function resolveAcceptLanguage(expectedCurrency?: string | null): string {
+  switch (expectedCurrency?.trim().toUpperCase()) {
+    case "GBP":
+      return "en-GB,en;q=0.9";
+    case "EUR":
+      return "en-IE,en;q=0.9";
+    case "CAD":
+      return "en-CA,en;q=0.9";
+    case "AUD":
+      return "en-AU,en;q=0.9";
+    default:
+      return "en-US,en;q=0.9";
+  }
 }
 
 function isRedirectStatus(status: number): boolean {
@@ -239,6 +256,71 @@ interface ShopifyProductJson {
   compare_at_price_max?: unknown;
   available?: unknown;
   variants?: unknown;
+  selling_plan_groups?: unknown;
+}
+
+function extractShopifySellingPlanPricing(
+  data: ShopifyProductJson,
+  fallbackHtmlSub: SubscriptionPricing
+): SubscriptionPricing {
+  let detected = fallbackHtmlSub.detected;
+  let lowestPrice = fallbackHtmlSub.lowestPrice;
+  let maxDiscountPct = fallbackHtmlSub.maxDiscountPct;
+  let provider = fallbackHtmlSub.provider;
+
+  if (Array.isArray(data.selling_plan_groups) && data.selling_plan_groups.length > 0) {
+    detected = true;
+    provider = provider ?? "Shopify Selling Plans";
+    for (const group of data.selling_plan_groups) {
+      if (typeof group !== "object" || group === null) continue;
+      const g = group as Record<string, unknown>;
+      if (typeof g.app_id === "string" && g.app_id.trim() && !fallbackHtmlSub.provider) {
+        provider = g.app_id.trim();
+      }
+      if (!Array.isArray(g.selling_plans)) continue;
+      for (const plan of g.selling_plans) {
+        if (typeof plan !== "object" || plan === null) continue;
+        const p = plan as Record<string, unknown>;
+        if (!Array.isArray(p.price_adjustments)) continue;
+        for (const adj of p.price_adjustments) {
+          if (typeof adj !== "object" || adj === null) continue;
+          const a = adj as Record<string, unknown>;
+          if (a.value_type === "percentage" && typeof a.value === "number" && a.value > 0) {
+            if (maxDiscountPct === null || a.value > maxDiscountPct) {
+              maxDiscountPct = a.value;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (Array.isArray(data.variants)) {
+    for (const rawVar of data.variants) {
+      if (typeof rawVar !== "object" || rawVar === null) continue;
+      const v = rawVar as Record<string, unknown>;
+      if (!Array.isArray(v.selling_plan_allocations)) continue;
+      for (const alloc of v.selling_plan_allocations) {
+        if (typeof alloc !== "object" || alloc === null) continue;
+        const a = alloc as Record<string, unknown>;
+        const allocPrice = parseShopifyPrice(a.price);
+        if (allocPrice !== null && allocPrice > 0) {
+          detected = true;
+          provider = provider ?? "Shopify Selling Plans";
+          if (lowestPrice === null || allocPrice < lowestPrice) {
+            lowestPrice = allocPrice;
+          }
+        }
+      }
+    }
+  }
+
+  return {
+    detected,
+    lowestPrice,
+    maxDiscountPct,
+    provider,
+  };
 }
 
 function buildSnapshotFromShopifyJson(
@@ -317,6 +399,11 @@ function buildSnapshotFromShopifyJson(
   const currency =
     htmlMetadata.currency ?? extractShopifyCurrencyFromHtml(htmlBody);
 
+  const subscriptionPricing = extractShopifySellingPlanPricing(
+    data,
+    htmlMetadata.subscriptionPricing
+  );
+
   return {
     url: meta.url,
     finalUrl: meta.finalUrl,
@@ -331,6 +418,8 @@ function buildSnapshotFromShopifyJson(
     inStock,
     variants,
     promoVerification: htmlMetadata.promoVerification,
+    subscriptionPricing,
+    localization: htmlMetadata.localization,
     source: "shopify_js",
     fetchError: null,
   };
@@ -409,6 +498,7 @@ export async function verifyStorefront(
           signal: controller.signal,
           headers: {
             "User-Agent": USER_AGENT,
+            "Accept-Language": resolveAcceptLanguage(input.expectedCurrency),
             Accept:
               "text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8",
           },
@@ -500,6 +590,10 @@ export async function verifyStorefront(
     }
 
     const htmlMetadata = parseHtmlStorefrontMetadata(bodyText, input.promoCode);
+    htmlMetadata.localization = {
+      ...htmlMetadata.localization,
+      requestedCurrency: input.expectedCurrency?.trim().toUpperCase() || null,
+    };
     const finalUrlObj = new URL(currentUrl);
     const redirectTargetParam = finalUrlObj.searchParams.get("redirect") ?? "";
     const productPathMatch =
@@ -608,6 +702,8 @@ export async function verifyStorefront(
       inStock: htmlMetadata.inStock,
       variants: htmlMetadata.variants,
       promoVerification: htmlMetadata.promoVerification,
+      subscriptionPricing: htmlMetadata.subscriptionPricing,
+      localization: htmlMetadata.localization,
       source: htmlMetadata.source,
       fetchError: null,
     };
