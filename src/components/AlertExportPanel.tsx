@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
   AlertCircle,
   Check,
+  ChevronDown,
   Copy,
   Download,
   FileCode2,
@@ -84,6 +85,7 @@ export function AlertExportPanel({ report }: AlertExportPanelProps) {
   const [copiedTarget, setCopiedTarget] = useState<CopyTarget>(null);
   const [statusMessage, setStatusMessage] = useState<string>("");
   const [showSlackWebhookBar, setShowSlackWebhookBar] = useState<boolean>(false);
+  const [showMoreExports, setShowMoreExports] = useState<boolean>(false);
   const [webhookUrl, setWebhookUrl] = useState<string>("");
   const [isSendingWebhook, setIsSendingWebhook] = useState<boolean>(false);
   const [webhookError, setWebhookError] = useState<string | null>(null);
@@ -214,8 +216,26 @@ export function AlertExportPanel({ report }: AlertExportPanelProps) {
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
+            onClick={handleCopyShareLink}
+            className="inline-flex items-center gap-1.5 rounded-full bg-[var(--accent-primary)] px-4 py-2 text-xs font-semibold text-[var(--accent-ink)] transition hover:bg-[var(--accent-primary-hover)]"
+          >
+            {copiedTarget === "share" ? (
+              <>
+                <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                Link Copied!
+              </>
+            ) : (
+              <>
+                <Share2 className="h-3.5 w-3.5" aria-hidden="true" />
+                Copy Shareable Link
+              </>
+            )}
+          </button>
+
+          <button
+            type="button"
             onClick={handleCopySlack}
-            className="inline-flex items-center gap-1.5 rounded-full bg-[var(--accent-primary)] px-3.5 py-2 text-xs font-semibold text-[var(--accent-ink)] transition hover:bg-[var(--accent-primary-hover)]"
+            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-strong)]"
           >
             {copiedTarget === "slack" ? (
               <>
@@ -243,59 +263,55 @@ export function AlertExportPanel({ report }: AlertExportPanelProps) {
             Send to Slack Webhook
           </button>
 
-          <button
-            type="button"
-            onClick={handleCopyShareLink}
-            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-strong)]"
-          >
-            {copiedTarget === "share" ? (
-              <>
-                <Check className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
-                Link Copied!
-              </>
-            ) : (
-              <>
-                <Share2 className="h-3.5 w-3.5" aria-hidden="true" />
-                Copy Shareable Link
-              </>
-            )}
-          </button>
+          <div className="relative">
+            <button
+              type="button"
+              aria-expanded={showMoreExports}
+              onClick={() => setShowMoreExports((prev) => !prev)}
+              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3.5 py-2 text-xs font-semibold text-[var(--text-muted)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
+            >
+              <span>More Exports</span>
+              <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
 
-          <button
-            type="button"
-            onClick={handleCopyMarkdown}
-            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-strong)]"
-          >
-            {copiedTarget === "markdown" ? (
-              <>
-                <Check className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
-                Copied!
-              </>
-            ) : (
-              <>
-                <Copy className="h-3.5 w-3.5" aria-hidden="true" />
-                Copy Markdown
-              </>
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={handleDownloadJson}
-            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-strong)]"
-          >
-            <Download className="h-3.5 w-3.5" aria-hidden="true" />
-            Download JSON
-          </button>
-
-          <button
-            type="button"
-            onClick={handleDownloadMarkdown}
-            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface-subtle)] px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-strong)]"
-          >
-            <Download className="h-3.5 w-3.5" aria-hidden="true" />
-            Download Markdown
-          </button>
+            {showMoreExports ? (
+              <div className="absolute right-0 z-20 mt-2 w-48 space-y-1 rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-1.5 shadow-xl">
+                <button
+                  type="button"
+                  onClick={() => {
+                    void handleCopyMarkdown();
+                    setShowMoreExports(false);
+                  }}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-medium text-[var(--text-primary)] transition hover:bg-[var(--bg-surface-subtle)]"
+                >
+                  <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+                  {copiedTarget === "markdown" ? "Copied!" : "Copy Markdown"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleDownloadJson();
+                    setShowMoreExports(false);
+                  }}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-medium text-[var(--text-primary)] transition hover:bg-[var(--bg-surface-subtle)]"
+                >
+                  <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                  Download JSON
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleDownloadMarkdown();
+                    setShowMoreExports(false);
+                  }}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-medium text-[var(--text-primary)] transition hover:bg-[var(--bg-surface-subtle)]"
+                >
+                  <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                  Download Markdown
+                </button>
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
 

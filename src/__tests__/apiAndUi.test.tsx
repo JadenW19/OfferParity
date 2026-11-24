@@ -204,22 +204,37 @@ describe("OfferParity Dashboard UI (HomePage)", () => {
     });
   }
 
-  it("pre-loads the oos-price-mismatch scenario with full report, variant matrix, and waste math", () => {
+  it("starts clean with empty inputs and loads the oos-price-mismatch scenario with variant matrix and waste math on click", async () => {
+    mockApiXrayFetch();
     render(<HomePage />);
 
     expect(
       screen.getByRole("heading", { name: /OfferParity — Broken-Offer X-Ray/i })
     ).toBeInTheDocument();
+    expect(screen.getByTestId("xray-mode-indicator")).toHaveTextContent(
+      "Mode: Custom Live URL"
+    );
+    expect(screen.queryByTestId("overall-verdict-badge")).not.toBeInTheDocument();
 
+    // Click Out-of-Stock Variant & Price Mismatch scenario pill
+    fireEvent.click(
+      screen.getByRole("button", { name: /Out-of-Stock Variant & Price Mismatch/i })
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId("overall-verdict-badge")).toHaveTextContent("FAIL");
+    });
     expect(screen.getByTestId("xray-mode-indicator")).toHaveTextContent(
       "Mode: Demo Fixture (oos-price-mismatch)"
     );
-    expect(screen.getByTestId("overall-verdict-badge")).toHaveTextContent("FAIL");
     expect(screen.getByTestId("daily-waste-value")).toHaveTextContent("$722.50");
     expect(screen.getByTestId("monthly-waste-value")).toHaveTextContent("$21,675.00");
     expect(screen.getByTestId("at-risk-spend-value")).toHaveTextContent("$12.75");
 
-    // Variant inventory matrix shows available & out-of-stock badges
+    // Expand Raw Extraction & Variants to inspect variant matrix
+    fireEvent.click(
+      screen.getByRole("button", { name: /Inspect Raw Extraction & Variants/i })
+    );
     expect(screen.getByText("Alpine Olive / L")).toBeInTheDocument();
     expect(screen.getByText("Out of Stock")).toBeInTheDocument();
     expect(screen.getByText("Charcoal / S")).toBeInTheDocument();
@@ -268,6 +283,13 @@ describe("OfferParity Dashboard UI (HomePage)", () => {
     const fetchSpy = mockApiXrayFetch();
     render(<HomePage />);
 
+    fireEvent.click(
+      screen.getByRole("button", { name: /Out-of-Stock Variant & Price Mismatch/i })
+    );
+    await waitFor(() => {
+      expect(screen.getByTestId("daily-waste-value")).toHaveTextContent("$722.50");
+    });
+
     // Quick-select $5,000 budget chip updates input and runs X-Ray cleanly
     const chip5000 = screen.getByRole("button", { name: "$5,000" });
     fireEvent.click(chip5000);
@@ -279,7 +301,7 @@ describe("OfferParity Dashboard UI (HomePage)", () => {
     await waitFor(() => {
       expect(screen.getByTestId("daily-waste-value")).toHaveTextContent("$4,250.00");
     });
-    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
 
     // Editing URL away from demo preset switches mode indicator to Custom Live URL
     const urlInput = screen.getByLabelText(/Landing Page URL/i);
@@ -310,7 +332,15 @@ describe("OfferParity Dashboard UI (HomePage)", () => {
       .spyOn(HTMLAnchorElement.prototype, "click")
       .mockImplementation(() => {});
 
+    mockApiXrayFetch();
     render(<HomePage />);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /Out-of-Stock Variant & Price Mismatch/i })
+    );
+    await waitFor(() => {
+      expect(screen.getByTestId("overall-verdict-badge")).toHaveTextContent("FAIL");
+    });
 
     // Copy Slack Alert
     fireEvent.click(screen.getByRole("button", { name: /Copy Slack Alert/i }));
@@ -320,7 +350,8 @@ describe("OfferParity Dashboard UI (HomePage)", () => {
     expect(writeText.mock.calls[0]?.[0]).toContain("OfferParity X-Ray FAIL");
     expect(screen.getByRole("status")).toHaveTextContent("Copied Slack alert to clipboard!");
 
-    // Copy Markdown
+    // Copy Markdown (inside More Exports menu)
+    fireEvent.click(screen.getByRole("button", { name: /More Exports/i }));
     fireEvent.click(screen.getByRole("button", { name: /Copy Markdown/i }));
     await waitFor(() => {
       expect(writeText).toHaveBeenCalledTimes(2);
@@ -338,12 +369,14 @@ describe("OfferParity Dashboard UI (HomePage)", () => {
       "OfferParity X-Ray FAIL"
     );
 
-    // Download JSON & Markdown
+    // Download JSON & Markdown (inside More Exports menu)
+    fireEvent.click(screen.getByRole("button", { name: /More Exports/i }));
     fireEvent.click(screen.getByRole("button", { name: /Download JSON/i }));
     expect(createObjectUrlSpy).toHaveBeenCalledTimes(1);
     expect(anchorClickSpy).toHaveBeenCalledTimes(1);
     expect(screen.getByRole("status")).toHaveTextContent("Downloaded JSON report.");
 
+    fireEvent.click(screen.getByRole("button", { name: /More Exports/i }));
     fireEvent.click(screen.getByRole("button", { name: /Download Markdown/i }));
     expect(createObjectUrlSpy).toHaveBeenCalledTimes(2);
     expect(anchorClickSpy).toHaveBeenCalledTimes(2);
@@ -358,6 +391,10 @@ describe("OfferParity Dashboard UI (HomePage)", () => {
     mockApiXrayFetch();
     render(<HomePage />);
 
+    const adCopyInput = screen.getByLabelText(/Ad Copy/i);
+    fireEvent.change(adCopyInput, {
+      target: { value: "Test product $45 today only" },
+    });
     const urlInput = screen.getByLabelText(/Landing Page URL/i);
     fireEvent.change(urlInput, { target: { value: "http://127.0.0.1:3000/products/test" } });
     fireEvent.click(screen.getByRole("button", { name: /Run X-Ray/i }));

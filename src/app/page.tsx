@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FileSpreadsheet, Search, Zap } from "lucide-react";
+import { ChevronDown, ChevronUp, FileSpreadsheet, Search, Zap } from "lucide-react";
 import { AlertExportPanel } from "@/components/AlertExportPanel";
 import { BatchAuditPanel } from "@/components/BatchAuditPanel";
 import { ClaimsComparisonCard } from "@/components/ClaimsComparisonCard";
@@ -24,14 +24,9 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { WasteSummaryBanner } from "@/components/WasteSummaryBanner";
 import { XRayForm } from "@/components/XRayForm";
 import { trackEvent } from "@/lib/analytics";
-import { evaluateParity } from "@/lib/diff/parityEngine";
-import { calculateWaste } from "@/lib/diff/wasteCalculator";
-import { buildMarkdownReport, buildSlackAlert } from "@/lib/exporters/reportFormatters";
 import {
   getDemoScenarioPreset,
-  resolveFixtureSnapshot,
 } from "@/lib/fixtures/demoScenarios";
-import { extractAdClaims } from "@/lib/parser/adClaimExtractor";
 import {
   FixtureScenarioIdSchema,
   LeadPlanInterestSchema,
@@ -42,7 +37,6 @@ import {
   type XRayReport,
 } from "@/lib/schemas";
 
-const INITIAL_SCENARIO_ID: FixtureScenarioId = "oos-price-mismatch";
 type AuditMode = "single" | "batch";
 
 interface SharedUrlParams {
@@ -81,55 +75,16 @@ function readSharedQueryParams(): SharedUrlParams | null {
   };
 }
 
-function buildInitialDemoReport(): XRayReport {
-  const preset = getDemoScenarioPreset(INITIAL_SCENARIO_ID);
-  const request = {
-    adCopy: preset.adCopy,
-    landingPageUrl: preset.landingPageUrl,
-    dailyBudget: preset.dailyBudget,
-    fixtureId: preset.id,
-  };
-  const extractedClaims = extractAdClaims(request.adCopy, request.landingPageUrl);
-  const storefront = resolveFixtureSnapshot({
-    fixtureId: preset.id,
-    landingPageUrl: request.landingPageUrl,
-    promoCode: extractedClaims.promoCode,
-  });
-  if (!storefront) {
-    throw new Error(`Missing initial fixture snapshot for ${INITIAL_SCENARIO_ID}`);
-  }
-  const { checks, overallStatus } = evaluateParity(extractedClaims, storefront);
-  const waste = calculateWaste(checks, request.dailyBudget, overallStatus);
-  const reportBase = {
-    request,
-    extractedClaims,
-    storefront,
-    checks,
-    overallStatus,
-    waste,
-    generatedAt: "2026-11-18T00:00:00.000Z",
-    durationMs: 1,
-  };
-  const slackAlert = buildSlackAlert(reportBase);
-  const markdownReport = buildMarkdownReport(reportBase);
-
-  return XRayReportSchema.parse({
-    ...reportBase,
-    slackAlert,
-    markdownReport,
-  });
-}
-
 export default function HomePage() {
-  const initialPreset = getDemoScenarioPreset(INITIAL_SCENARIO_ID);
   const [mode, setMode] = useState<AuditMode>("single");
-  const [adCopy, setAdCopy] = useState<string>(initialPreset.adCopy);
-  const [landingPageUrl, setLandingPageUrl] = useState<string>(initialPreset.landingPageUrl);
-  const [dailyBudget, setDailyBudget] = useState<string>(String(initialPreset.dailyBudget));
+  const [adCopy, setAdCopy] = useState<string>("");
+  const [landingPageUrl, setLandingPageUrl] = useState<string>("");
+  const [dailyBudget, setDailyBudget] = useState<string>("500");
   const [activeFixtureId, setActiveFixtureId] = useState<FixtureScenarioId | null>(
-    INITIAL_SCENARIO_ID
+    null
   );
-  const [report, setReport] = useState<XRayReport>(() => buildInitialDemoReport());
+  const [report, setReport] = useState<XRayReport | null>(null);
+  const [showRawDetails, setShowRawDetails] = useState<boolean>(false);
   const [recentScans, setRecentScans] = useState<RecentScanEntry[]>([]);
   const [hasMounted, setHasMounted] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -486,19 +441,46 @@ export default function HomePage() {
               onSubmit={handleSubmit}
             />
 
-            <WasteSummaryBanner
-              report={report}
-              onOpenMonitorCta={handleOpenSingleMonitorCta}
-            />
+            {report ? (
+              <>
+                <WasteSummaryBanner
+                  report={report}
+                  onOpenMonitorCta={handleOpenSingleMonitorCta}
+                />
 
-            <ParityDiffTable checks={report.checks} />
+                <ParityDiffTable checks={report.checks} />
 
-            <ClaimsComparisonCard
-              extractedClaims={report.extractedClaims}
-              storefront={report.storefront}
-            />
+                <div>
+                  <button
+                    type="button"
+                    aria-expanded={showRawDetails}
+                    onClick={() => setShowRawDetails((prev) => !prev)}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-4 py-2 text-xs font-semibold text-[var(--text-muted)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
+                  >
+                    {showRawDetails ? (
+                      <>
+                        <ChevronUp className="h-3.5 w-3.5" aria-hidden="true" />
+                        Hide Raw Extraction &amp; Variants
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+                        Inspect Raw Extraction &amp; Variants
+                      </>
+                    )}
+                  </button>
+                </div>
 
-            <AlertExportPanel report={report} />
+                {showRawDetails ? (
+                  <ClaimsComparisonCard
+                    extractedClaims={report.extractedClaims}
+                    storefront={report.storefront}
+                  />
+                ) : null}
+
+                <AlertExportPanel report={report} />
+              </>
+            ) : null}
           </>
         ) : (
           <BatchAuditPanel

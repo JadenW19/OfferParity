@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { POST as postBillingCheckout } from "@/app/api/billing/checkout/route";
 import { POST as postLead } from "@/app/api/leads/route";
+import { POST as postXray } from "@/app/api/xray/route";
 import BotPage from "@/app/bot/page";
 import HomePage from "@/app/page";
 import PricingPage from "@/app/pricing/page";
@@ -97,6 +98,15 @@ describe("Non-Blocking Conversion CTA & Commercial Pages", () => {
           : input instanceof URL
             ? input.href
             : input.url;
+      if (url === "/api/xray") {
+        return postXray(
+          new Request("http://localhost:3000/api/xray", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: init?.body,
+          })
+        );
+      }
       if (url === "/api/leads") {
         return postLead(
           new Request("http://localhost:3000/api/leads", {
@@ -110,6 +120,13 @@ describe("Non-Blocking Conversion CTA & Commercial Pages", () => {
     });
 
     render(<HomePage />);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /Out-of-Stock Variant & Price Mismatch/i })
+    );
+    await waitFor(() => {
+      expect(screen.getByTestId("overall-verdict-badge")).toHaveTextContent("FAIL");
+    });
 
     const ctaButton = screen.getByRole("button", {
       name: /Monitor this URL hourly in Slack/i,
