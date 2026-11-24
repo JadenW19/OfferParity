@@ -39,6 +39,9 @@ const PROMO_STOPWORDS = new Set([
 
 const NON_VARIANT_IN_WORDS = new Set([
   "stock",
+  "size",
+  "sizes",
+  "all",
   "time",
   "usa",
   "us",

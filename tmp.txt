@@ -1,0 +1,197 @@
+# OfferParity B2B Outbound Prospect List — Trending TikTok / Meta DTC Shopify Brands (US & UK)
+Generated: 2026-11-24
+Target ICP: Mid-market DTC Shopify brands ($2M–$50M/yr est. rev) in Beauty/Skincare, Supplements, Apparel/Activewear, Footwear, and Home/Gear.
+
+================================================================================
+SUMMARY TABLE
+================================================================================
+
+| # | Priority | Brand Name & Storefront (Shopify) | Vertical | Market | Hero Product URL (`/products/...`) | Parity-Break Risk | Buyer Contact / Agency |
+|---|----------|-----------------------------------|----------|--------|--------------------------------------|-------------------|------------------------|
+| 1 | PRIORITY #1 | Topicals — https://mytopicals.com (Shopify) | Beauty / Skincare | US | https://mytopicals.com/products/faded-brightening-clearing-serum | Live price is US$28 (Full Size) vs $38 cited in ads/reviews; Black Friday banner shows 4 free gifts with no promo code vs 15-20% creator codes | Helena Youhana (Head/Director of Growth) / Olamide Olowe (Founder) |
+| 2 | PRIORITY #1 | POPFLEX — https://www.popflexactive.com (Shopify) | Apparel / Activewear | US | https://www.popflexactive.com/products/pirouette-skort-black | Live page shows Black Friday "UP TO 75% OFF" (£48 vs £59 compare-at) with no promo code banner, while ads promote FLEX30 (30% off) / POPEX5; XXS-3X size matrix | Cassey Ho & Sam Tsang (Founders, oGorgeous Inc. in-house growth team) |
+| 3 | PRIORITY #1 | Comfrt — https://comfrt.com (Shopify) | Apparel / Loungewear | US | https://comfrt.com/en-gb/products/minimalist-hoodie | Live OOS + promo mismatch: Core Forest XS/S/L/XL/3X & Steel-Grey/Obsidian OOS; £41 vs £158 comp value ("Up to 80% Off*") while ads push COMFRT15 | Gillian Bell (Chief Revenue & Growth Officer) |
+| 4 | PRIORITY #1 | DFYNE — https://uk.dfyne.com (Shopify) | Apparel / Activewear | UK/US | https://uk.dfyne.com/collections/impact/products/dfyne-impact-red-leggings-260421 | Live OOS colorway (`Ink` SOLD OUT) + 30% off (£37.79 vs £53.99); Spark ads call out specific colorways, XS-XXL, and code KELS (10% off) | In-house creator-affiliate & paid social team (DEPT® agency partner in sector) |
+| 5 | High | Adanola — https://adanola.com (Shopify) | Apparel / Activewear | UK/US | https://adanola.com/products/ultimate-leggings-coffee-bean | Live £40; ads call out Olive Green, Espresso, Black in XXS-XXXL where hero sizes frequently sell out | Lily Thistlewood (Head of Performance Marketing); Nest Commerce (agency) |
+| 6 | PRIORITY #1 | AYBL — https://www.aybl.com (Shopify) | Apparel / Activewear | UK/US | https://www.aybl.com/products/empower-seamless-leggings-black | Live OOS: `Long` leg length Sold Out across all sizes XS-XXL; £25.20 (40% OFF vs £42.00) while restock ads push creator codes (JULIA10, LISA10) | In-house Growth Marketing team (AYBL Group / BrandRepublik, Sr. Dir. Performance Marketing) |
+| 7 | High | TALA — https://www.wearetala.com (Shopify) | Apparel / Activewear | UK | https://www.wearetala.com/collections/skinluxe | Ads call out specific styles/colors/sizes (Cobalt Blue, Grey Marl 4XL, Midnight Navy 32"/M) and codes (CARNABY10 10% off, 15% Student/Blue Light) | Internal Head of Growth & Performance Marketing team |
+| 8 | High | Dieux Skin — https://www.dieuxskin.com (Shopify) | Beauty / Skincare | US | https://www.dieuxskin.com/products/instant-angel | Ads call out exact prices ($25 Forever Eye Mask, $45 Instant Angel) and affiliate codes (PRIYANKA15 for 10-15% off) | Ryan Scott (CEO) / Charlotte Palermino (Chief Brand Officer) |
+| 9 | High | Tower 28 Beauty — https://www.tower28beauty.com (Shopify) | Beauty / Skincare | US | https://www.tower28beauty.com/products/sos-daily-rescue-facial-spray | Ads call out $28 SOS Spray / $32 SunnyDays SPF across 17 shades + 15% off code BFF15 | Amanda Lopez (Chief Digital Officer) / Jessica Hou (Director of E-Commerce) |
+| 10 | High | Salt & Stone — https://www.saltandstone.com (Shopify) | Beauty / Body Care | US | https://www.saltandstone.com/en-gb/products/natural-deodorant-gel?variant=42738051055866 | Live £16 (20% off £20 compare-at sitewide); sensory ads call out $20 Santal & Vetiver Deodorant / $36 Body Wash + 15-20% bundle/member promos | Ari Murray (Chief Digital Officer) / Abbey Tellam (CMO) |
+| 11 | High | Sculpted by Aimee — https://www.sculptedbyaimee.com (Shopify) | Beauty / Makeup | UK/IE | https://www.sculptedbyaimee.com/products/second-skin-dewy | Ads pitch 30 shades at $33 / £27 + APP20 (20% off first app order) | Kim Doan (CMO) / Richard Chapple (Chief Growth Officer via The Growth Foundation) |
+| 12 | High | Spacegoods — https://spacegoods.com (Shopify) | Supplements | UK | https://spacegoods.com/products/rainbow-dust-starter-kit | Live £29 (compare-at £94) + active code `BF10` (extra 10% off); creator ads pitch HANNA14544 / PAIGE (20-25% off) | Internal Senior Growth Marketer; Soar With Us / Gravitas (partners) |
+| 13 | High | Rheal Superfoods — https://rhealsuperfoods.com (Shopify) | Supplements | UK | https://rhealsuperfoods.com/products/clean-greens | Ads pitch £25 Clean Greens / Magic Matcha + 20% off codes (ASHLEY, RHEAL20) & 30-40% Subscribe & Save | Max Greenwood (CEO) / Charlotte & Sean Ali (Founders) |
+| 14 | High | Everyday Dose — https://www.everydaydose.com (Shopify) | Supplements | US | https://www.everydaydose.com/products/mushroom-coffee | Aggressive "75% OFF + 10 Free Gifts" Starter Kit at $49 ($200+ value) + "supplies always sell out" urgency | VP of Growth / Dir. of Performance Creative; Adspace (paid social agency) |
+| 15 | High | Obvi — https://www.myobvi.com (Shopify) | Supplements | US | https://www.myobvi.com/products/super-collagen-protein | "Back in stock" quiz-funnel ads (~$39.99/tub) with cereal-milk flavors, BOGO & 15-20% off promos | Ash Melwani (CMO & Co-Founder) |
+| 16 | High | Grüns — https://gruns.co (Shopify Plus) | Supplements | US | https://gruns.co/products/gruns-daily-greens-gummies | High-volume ads pitching 55-61% off first-box subscription intro rate | Aaron Jones (CMO) |
+| 17 | High | JSHealth Vitamins — https://jshealthvitamins.com (Shopify) | Supplements | UK/US/AU | https://jshealthvitamins.com/products/detox-debloat-formula | $30-$50+ formulas with 10-15% welcome codes & 20-30% tiered promos | Jessica Horgan (Head of Marketing, AU & UK/EU) |
+| 18 | High | Vessi — https://vessi.com (Shopify) | Footwear | US/CA | https://vessi.com/products/womens-classic-chelsea-asphalt-on-black | Size/colorway ads (W 5-11, M 4-13; Midnight Black, Lily White, Asphalt Grey) + "up to 40% off" / $15 off promos | Lorrin Pascoe (CMO), Geoff Wilton (VP Brand); Wallaroo Media (TikTok/Snap agency) |
+| 19 | High | Kizik — https://kizik.com (Shopify) | Footwear | US | https://kizik.com/collections/athens | Ads call out US Women 6-11 / Men 7-14 & "up to $50 in FREE gifts + 15% off" | Elizabeth Drori (CMO), Jesse Semchuck (Head of Acquisition) |
+| 20 | High | Loop Earplugs — https://www.loopearplugs.com (Shopify) | Home / Gear | US/UK | https://www.loopearplugs.com/products/loop-quiet-2 | Thousands of ad variants calling out colors (Rose Gold, Midnight Black, Clear, Serene White) & tiered bundle discounts (10% at €49, 20% at €99+) | Rob Weston (VP of Marketing / Chief Marketing & Commercial Officer) |
+
+================================================================================
+RAW DETAILS BY BRAND
+================================================================================
+
+1. TOPICALS [PRIORITY #1 — LIVE PRICE / PROMO MISMATCH OBSERVED]
+- Brand Name & Storefront URL: Topicals — https://mytopicals.com (Confirmed Shopify)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=Topicals) & TikTok Creative Center / Spark Ads
+- Sample Active Ad Copy: "Stop hiding behind foundation. If hyperpigmentation, dark spots, or stubborn post-acne marks are ruining your mood, try the internet-viral Faded Serum for $38. Dermatologist-tested, science-backed, and safe for all skin shades." (Also creator codes for 15–20% off like OGEXPERTS_SIERRA)
+- Destination Product URL: https://mytopicals.com/products/faded-brightening-clearing-serum?Faded+Brightening+%2B+Clearing+Serum%28unscented%29=Full+Size
+- Live Check Finding: Live page shows US$28 (Full Size 30ml) one-time / US$25.20 subscribe & save (vs $38 cited in ads/reviews) and a Black Friday banner ("Unlock up to 4 FREE gifts") with no promo code shown.
+- Why They're a Fit: Heavy raw UGC + Meta retargeting spend; multiple size tiers (Trial, Mini, Full Size, Jumbo) and rotating creator promo codes create frequent price/promo parity risk.
+- Buyer Contact: Helena Youhana (Head/Director of Growth) / Olamide Olowe (Founder).
+
+2. POPFLEX [PRIORITY #1 — LIVE PROMO CODE VS SITEWIDE SALE MISMATCH OBSERVED]
+- Brand Name & Storefront URL: POPFLEX — https://www.popflexactive.com (Confirmed Shopify)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=POPFLEX) & TikTok Shop / Spark Ads
+- Sample Active Ad Copy: "The butterfly leggings you've been asking for are finally restocked in all colors (Lavender Haze, Sage, and Classic Black, Sizes XXS to 3X). Cross waistband, no front seam, and actually squat-proof. Use code FLEX30 at checkout to secure your discount."
+- Destination Product URL: https://www.popflexactive.com/products/pirouette-skort-black
+- Live Check Finding: Live page shows Black Friday Sale "UP TO 75% OFF SITEWIDE" (£48.00 vs £59.00 compare-at), with sale prices reflected as shown and no promo code banner (vs creator/ad codes like FLEX30 / POPEX5).
+- Why They're a Fit: Massive size matrix (XXS–3X) + viral colorway drops (Deep Cherry, Crimson, Lavender, Buttercream, Eucalyptus) that frequently restock/sell out.
+- Buyer Contact: Cassey Ho & Sam Tsang (Founders, oGorgeous Inc. — in-house digital/growth team).
+
+3. COMFRT [PRIORITY #1 — LIVE 404 ON MEGA HANDLE + PROMO MISMATCH]
+- Brand Name & Storefront URL: Comfrt — https://comfrt.com (Confirmed Shopify)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=Comfrt) & TikTok Shop / Spark Ads
+- Sample Active Ad Copy: "Heavyweight sweatpants that feel like a weighted blanket. Oversized fit, designed to help you decompress. Colors: Heather Oatmeal, Slate, Onyx. Sizes: S/M, L/XL, 2XL/3XL. Get 15% off your first set with code COMFRT15."
+- Destination Product URL: https://comfrt.com/products/minimalist-hoodie (Note: `/products/minimalist-hoodie-mega` returned Page Not Found)
+- Live Check Finding: Live `/products/minimalist-hoodie` shows £41 vs £179 Comp. Value under rotating "Up to 80% Off*" Black Friday bar with no promo code displayed (vs COMFRT15 / MOHSIN5 in ads).
+- Why They're a Fit: High-velocity TikTok/Meta hoodie & loungewear brand with deep markdowns, heavy variant matrices, and frequent URL/collection changes.
+- Buyer Contact: Gillian Bell (Chief Revenue & Growth Officer).
+
+4. DFYNE
+- Brand Name & Storefront URL: DFYNE — https://uk.dfyne.com / https://dfyne.com (Confirmed Shopify)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=DFYNE) & TikTok Spark Ads
+- Sample Active Ad Copy: "The Impact Collection is back. Sculpting seams, ultimate compression, and zero roll-down. Colors: Cocoa, Cherry Red, Onyx Black. Sizes: XS–XXL. Don't forget to drop code KELS at checkout for 10% off your order (ad)."
+- Destination Product URL: https://uk.dfyne.com/collections/impact/products/dfyne-impact-red-leggings-260421 (Note: root `/products/impact-leggings` returned 404)
+- Why They're a Fit: Huge international fitness-creator affiliate army pushing 10% codes (KELS, FREYA, BAILEY) + high-compression leggings/shorts where hero shades/sizes sell out fast.
+- Buyer Contact: Internal creator-affiliate & paid social team (DEPT® agency active in this cohort).
+
+5. ADANOLA
+- Brand Name & Storefront URL: Adanola — https://adanola.com (Confirmed Shopify)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=Adanola) & TikTok GRWM/haul ads
+- Sample Active Ad Copy: "Your transitional wardrobe is ready. Our transitional collection pairs soft silhouettes with lived-in comforts. Featured Item: Ultimate Leggings (Sizes: XXS–XXXL, Colors: Olive Green, Espresso, Black)."
+- Destination Product URL: https://adanola.com/collections/leggings (Note: `/products/womens-ultimate-leggings-black` returned 404)
+- Why They're a Fit: Fast-scaling UK athleisure brand expanding into the US; neutral colorways (Olive Green, Espresso) and core sizes frequently sell out during drops.
+- Buyer Contact: Lily Thistlewood (Head of Performance Marketing); Nest Commerce (performance agency partner).
+
+6. AYBL
+- Brand Name & Storefront URL: AYBL — https://www.aybl.com (Confirmed Shopify)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=AYBL) & TikTok Commercial Content Library
+- Sample Active Ad Copy: "This is only the beginning. No excuses gym ootd. Restock is live across all seamless collections. Sizes: XS to XL. Colors: Cobalt Blue, Steel Grey, Black Berry. fit: @aybl | code: JULIA10 [ad/anzeige]"
+- Destination Product URL: https://www.aybl.com/products/empower-seamless-leggings-black
+- Why They're a Fit: Heavy whitelisted creator paid social pushing 10% codes (JULIA10, LISA10) and restock urgency across seamless colorways.
+- Buyer Contact: In-house Growth Marketing team (AYBL Group / BrandRepublik, Senior Director of Performance Marketing).
+
+7. TALA
+- Brand Name & Storefront URL: TALA — https://www.wearetala.com (Confirmed Shopify)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=TALA) & TikTok ads
+- Sample Active Ad Copy: "Everyday comfort that moves with you. Discover the SkinLuxe and DayFlex lines engineered for all-day wear. Saved at checkout using partner code: CARNABY10 (10% off full price)."
+- Destination Product URL: https://www.wearetala.com/collections/skinluxe
+- Why They're a Fit: Extended sizing (up to 4XL, multiple inseams like 32"/M) and seasonal capsule shades (Fig, Olive, Espresso, Cobalt Blue) create high variant-level OOS risk.
+- Buyer Contact: Internal Head of Growth & Performance Marketing team.
+
+8. DIEUX SKIN
+- Brand Name & Storefront URL: Dieux Skin — https://www.dieuxskin.com (Confirmed Shopify)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=Dieux+Skin) & TikTok founder/UGC ads
+- Sample Active Ad Copy: "We don't believe in miracle marketing. We believe in barrier health. Grab the Forever Eye Mask for $25 to lock in your serums, cut down on single-use waste, and reuse them indefinitely. No false promises—just clinical hydration."
+- Destination Product URL: https://www.dieuxskin.com/products/instant-angel
+- Why They're a Fit: Calls out exact prices ($25 / $45) and selective affiliate codes (PRIYANKA15 for 10–15% off) in Meta ads; rapid SKU growth.
+- Buyer Contact: Ryan Scott (CEO) / Charlotte Palermino (Chief Brand Officer).
+
+9. TOWER 28 BEAUTY
+- Brand Name & Storefront URL: Tower 28 Beauty — https://www.tower28beauty.com (Confirmed Shopify)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=Tower+28+Beauty) & TikTok GRWM ads
+- Sample Active Ad Copy: "Sensitive skin approved & the only complexion SPF accepted by the National Eczema Association. Get the SunnyDays Tinted Sunscreen Foundation ($32; find your match across 17 flexible shades). Use code BFF15 at checkout for 15% off your entire clean beauty routine."
+- Destination Product URL: https://www.tower28beauty.com/products/sos-daily-rescue-facial-spray
+- Why They're a Fit: 17-shade foundation matrix + 15% off promo codes (BFF15) in active ads.
+- Buyer Contact: Amanda Lopez (Chief Digital Officer) / Jessica Hou (Director of E-Commerce).
+
+10. SALT & STONE
+- Brand Name & Storefront URL: Salt & Stone — https://www.saltandstone.com (Confirmed Shopify)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=Salt+and+Stone) & TikTok UGC ads
+- Sample Active Ad Copy: "48-hour natural protection that actually smells like a luxury hotel. Experience our award-winning Deodorant in Santal & Vetiver for $20. Formulated with seaweed extracts, hyaluronic acid, and probiotics."
+- Destination Product URL: https://www.saltandstone.com/products/natural-deodorant-santal-vetiver
+- Why They're a Fit: Hero scent variants (Santal & Vetiver, Bergamot & Hinoki, Ambrette & Pear) and exact $20 / $36 pricing called out in high-spend sensory video ads.
+- Buyer Contact: Ari Murray (Chief Digital Officer) / Abbey Tellam (CMO).
+
+11. SCULPTED BY AIMEE
+- Brand Name & Storefront URL: Sculpted by Aimee — https://www.sculptedbyaimee.com / .co.uk (Confirmed Shopify)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=Sculpted+by+Aimee) & TikTok tutorial ads
+- Sample Active Ad Copy: "Your foundation shouldn't feel like heavy armor. Second Skin delivers a radiant, second-skin finish in 30 true-to-life shades for $33. Download our app today and use code APP20 to unlock 20% off your first order."
+- Destination Product URL: https://www.sculptedbyaimee.com/products/second-skin-dewy
+- Why They're a Fit: 30-shade complexion SKU + multi-currency (UK/US) pricing + app/bundle promo codes (APP20).
+- Buyer Contact: Kim Doan (CMO) / Richard Chapple (Chief Growth Officer via The Growth Foundation).
+
+12. SPACEGOODS
+- Brand Name & Storefront URL: Spacegoods — https://spacegoods.com (Confirmed Shopify)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=Spacegoods) & TikTok Spark Ads
+- Sample Active Ad Copy: "I thought it was just regular brain fog... turns out I was missing functional mushrooms. Swap your 2 PM crash for clean, jitter-free focus with Rainbow Dust. Get the Starter Kit today for £29, and use code HANNA14544 at checkout for an extra 25% off your order."
+- Destination Product URL: https://spacegoods.com/products/rainbow-dust-premium-starter-kit
+- Why They're a Fit: High-velocity UK functional mushroom brand; creator codes (HANNA14544, PAIGE) don't stack with subscriptions, creating checkout/promo friction.
+- Buyer Contact: Internal Senior Growth Marketer; Soar With Us / Gravitas (growth/creative partners).
+
+13. RHEAL SUPERFOODS
+- Brand Name & Storefront URL: Rheal Superfoods — https://rhealsuperfoods.com (Confirmed Shopify)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=Rheal+Superfoods) & TikTok creator ads
+- Sample Active Ad Copy: "Bloating, low energy, and sluggish digestion throwing off your routine? Nourish your gut with 7 powerful superfoods in one daily scoop. Grab your Magic Matcha or Clean Greens blend starting at £25, and save 20% off with code ASHLEY / RHEAL20."
+- Destination Product URL: https://rhealsuperfoods.com/products/clean-greens
+- Why They're a Fit: Multiple flavor/blend SKUs + 20% off creator codes vs 30–40% Subscribe & Save intro offers.
+- Buyer Contact: Max Greenwood (CEO) / Charlotte & Sean Ali (Founders).
+
+14. EVERYDAY DOSE
+- Brand Name & Storefront URL: Everyday Dose — https://www.everydaydose.com (Confirmed Shopify)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=Everyday+Dose) & TikTok UGC ads
+- Sample Active Ad Copy: "Get 75% OFF + 10 Free Gifts! Stop drinking coffee that leaves you jittery. Switch to Everyday Dose—powered by functional mushrooms and nootropics for smooth energy, calm focus, and zero crash. Claim the complete Starter Kit bundle today for $49 (valued at $200+). Hurry, supplies always sell out."
+- Destination Product URL: https://www.everydaydose.com/products/mushroom-coffee
+- Why They're a Fit: Bold bundle math ("75% OFF + 10 Free Gifts", "$49 valued at $200+") and "supplies always sell out" claims — prime target for automated OfferParity verification.
+- Buyer Contact: VP of Growth / Director of Performance Creative; Adspace (paid social agency).
+
+15. OBVI
+- Brand Name & Storefront URL: Obvi — https://www.myobvi.com (Confirmed Shopify)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=Obvi) & TikTok quiz-funnel ads
+- Sample Active Ad Copy: "With over 385,000 units sold, the world's FIRST collagen-infused weight management protein is back in stock! Take our 60-second quiz to find the custom formula designed for your body type. Tap below to unlock your special introductory offer today."
+- Destination Product URL: https://www.myobvi.com/products/super-collagen-protein
+- Why They're a Fit: Heavy Meta creative testing volume across nostalgic flavors (Fruity Cereal, Cocoa Cereal, Cinnamon Cereal) + BOGO / 15–20% off promos.
+- Buyer Contact: Ash Melwani (CMO & Co-Founder).
+
+16. GRÜNS
+- Brand Name & Storefront URL: Grüns — https://gruns.co (Confirmed Shopify Plus)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=Gruns) & TikTok UGC taste-test ads
+- Sample Active Ad Copy: "'Grüns is too expensive' — here's 61% off to prove otherwise. 60+ ingredients, greens, vitamins, and adaptogens collapsed into a gummy that actually tastes like candy. Your entire supplement stack replaced in 2 daily gummies."
+- Destination Product URL: https://gruns.co/products/gruns-daily-greens-gummies
+- Why They're a Fit: Runs thousands of dynamic ad variants pitching 55–61% off introductory subscription pricing; high risk of % off mismatch across landing variants.
+- Buyer Contact: Aaron Jones (CMO).
+
+17. JSHEALTH VITAMINS
+- Brand Name & Storefront URL: JSHealth Vitamins — https://jshealthvitamins.com (Confirmed Shopify)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=JSHealth) & TikTok ads
+- Sample Active Ad Copy: Targeted Detox + Debloat / Hair + Energy video ads featuring 10–15% off welcome codes and 20–30% off tiered subscription promos ($30–$50+/bottle).
+- Destination Product URL: https://jshealthvitamins.com/products/detox-debloat-formula
+- Why They're a Fit: Multi-region storefronts (US/UK/AU) with rotating tiered % off sales and subscription discounts.
+- Buyer Contact: Jessica Horgan (Head of Marketing, AU & UK/EU).
+
+18. VESSI
+- Brand Name & Storefront URL: Vessi — https://vessi.com (Confirmed Shopify)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=Vessi) & TikTok waterproof-demo ads
+- Sample Active Ad Copy: "See it to BELIEVE it. 100% waterproof knit sneakers that look like regular daily shoes. Mud, puddles, and heavy rain approved. Styles: Everyday Classic, Weekend. Colors: Midnight Black, Lily White, Asphalt Grey. Sizes: Men's 4–13 / Women's 5–11. Save up to 40% Off."
+- Destination Product URL: https://vessi.com/products/womens-classic-chelsea-asphalt-on-black
+- Why They're a Fit: Footwear sizing + colorway matrix with seasonal "up to 40% off" and $15 off referral promos.
+- Buyer Contact: Lorrin Pascoe (CMO), Geoff Wilton (VP of Brand); Wallaroo Media (TikTok/Snapchat agency).
+
+19. KIZIK
+- Brand Name & Storefront URL: Kizik — https://kizik.com (Confirmed Shopify)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=Kizik) & TikTok hands-free demo ads
+- Sample Active Ad Copy: "Meet the NEW Freedom Pro. If you're on your feet all-day, step into the all-NEW Freedom Pro. Hands-Free Technology: No bending over, No tying, No crushed heels. Sizes: US Women 6–11 / Men 7–14. Get up to $50 in FREE gifts + 15% off now at kizik.com."
+- Destination Product URL: https://kizik.com/collections/athens
+- Why They're a Fit: Complex footwear size/width inventory paired with tiered free-gift + 15% off ad offers.
+- Buyer Contact: Elizabeth Drori (CMO), Jesse Semchuck (Head of Acquisition).
+
+20. LOOP EARPLUGS
+- Brand Name & Storefront URL: Loop Earplugs — https://www.loopearplugs.com (Confirmed Shopify)
+- TikTok / Ad Source: Meta Ad Library (https://www.facebook.com/ads/library/?active_status=all&q=Loop+Earplugs) & TikTok ads
+- Sample Active Ad Copy: "WHICH LOOP EARPLUGS DO YOU NEED? From concerts (Loop Experience) to sleep (Loop Quiet 2) and focus (Loop Engage). Colors: Rose Gold, Midnight Black, Clear, Serene White. Build Your Own Bundle and save up to 20% automatically (Spend €49 -> Save 10%, Spend €99+ -> Save 20%)."
+- Destination Product URL: https://www.loopearplugs.com/products/loop-quiet-2
+- Why They're a Fit: Thousands of active ad variations across multiple models/colors and threshold-based bundle discounts.
+- Buyer Contact: Rob Weston (VP of Marketing / Chief Marketing & Commercial Officer).

@@ -505,6 +505,25 @@ describe("evaluateParity + calculateWaste (Gate 3)", () => {
     );
     expect(minSpendAndUpTo.checks.find((c) => c.id === "promo_code")?.status).toBe("FAIL");
     expect(minSpendAndUpTo.checks.find((c) => c.id === "discount_math")?.status).toBe("WARN");
+
+    // Subscription/bundle ads with only % off (no explicit dollar price) and equal base/compare-at
+    // in static metadata should WARN rather than false-FAIL.
+    const subBundleResult = evaluateParity(
+      makeClaims({
+        advertisedPrice: null,
+        compareAtPrice: null,
+        discountPct: 61,
+        promoCode: null,
+        variantName: null,
+      }),
+      makeStorefront({
+        basePrice: 66.65,
+        compareAtPrice: 66.65,
+        promoVerification: null,
+      })
+    );
+    expect(subBundleResult.overallStatus).toBe("WARN");
+    expect(subBundleResult.checks.find((c) => c.id === "discount_math")?.status).toBe("WARN");
   });
 
   it("matches exact numeric Shopify ?variant=<id> against StorefrontVariant.id even without ad copy variant text", () => {

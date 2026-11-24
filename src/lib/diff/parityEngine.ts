@@ -643,6 +643,23 @@ function evaluateDiscountMath(
   const actualPct = Math.max(0, ((compareAt - effectivePrice) / compareAt) * 100);
   const overstatementPp = claims.discountPct - actualPct;
 
+  if (
+    actualPct === 0 &&
+    claims.advertisedPrice === null &&
+    claims.compareAtPrice === null
+  ) {
+    return {
+      id: "discount_math",
+      label: "Discount Math Accuracy",
+      status: "WARN",
+      expected: expectedStr,
+      actual: `Storefront static metadata shows ${formatMoney(effectivePrice, currency)} with no discounted compare-at price`,
+      impactWeight: 0.1,
+      remediation:
+        "Verify subscribe-and-save, bundle, or dynamic widget pricing manually on the live landing page.",
+    };
+  }
+
   if (overstatementPp > DISCOUNT_TOLERANCE_PP) {
     const actualDesc = `Actual discount is ${actualPct.toFixed(1)}% (${formatMoney(compareAt, currency)} -> ${formatMoney(effectivePrice, currency)})`;
     if (claims.isUpToDiscount) {
