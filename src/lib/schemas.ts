@@ -432,3 +432,90 @@ export const BillingCheckoutRequestSchema = z.object({
     .optional(),
 });
 export type BillingCheckoutRequest = z.infer<typeof BillingCheckoutRequestSchema>;
+
+/**
+ * Watchlist & Automated Hourly Monitoring Schemas (Option 2).
+ */
+export const WatchlistPlanSchema = z.enum(["pilot", "growth", "agency"]);
+export type WatchlistPlan = z.infer<typeof WatchlistPlanSchema>;
+
+export const WatchlistStatusSchema = z.enum(["active", "past_due", "canceled"]);
+export type WatchlistStatus = z.infer<typeof WatchlistStatusSchema>;
+
+export const WatchlistItemSchema = z.object({
+  id: z.string().min(1),
+  workspaceId: z.string().min(1),
+  adName: z.string().trim().min(1).max(160),
+  adCopy: z.string().trim().min(5).max(5000),
+  landingPageUrl: z
+    .string()
+    .trim()
+    .url()
+    .refine((u) => /^https?:\/\//i.test(u), "Only http:// and https:// URLs are supported"),
+  dailyBudget: z.number().finite().min(0).max(1_000_000),
+  enabled: z.boolean().default(true),
+  lastStatus: OverallVerdictSchema.nullable().default(null),
+  lastHttpStatus: z.number().int().nullable().default(null),
+  lastDailyWaste: z.number().nonnegative().default(0),
+  lastFailureSummary: z.string().nullable().default(null),
+  consecutiveFailures: z.number().int().nonnegative().default(0),
+  lastCheckedAt: z.string().nullable().default(null),
+  lastAlertedAt: z.string().nullable().default(null),
+  createdAt: z.string(),
+});
+export type WatchlistItem = z.infer<typeof WatchlistItemSchema>;
+
+export const WatchlistWorkspaceSchema = z.object({
+  id: z.string().min(1),
+  managementToken: z.string().min(16),
+  email: z.string().trim().email().max(254),
+  brandName: z.string().trim().min(1).max(120),
+  plan: WatchlistPlanSchema,
+  status: WatchlistStatusSchema.default("active"),
+  maxItems: z.number().int().positive(),
+  stripeCustomerId: z.string().nullable().default(null),
+  stripeSubscriptionId: z.string().nullable().default(null),
+  stripeCheckoutSessionId: z.string().nullable().default(null),
+  slackWebhookUrl: z
+    .string()
+    .trim()
+    .refine((u) => u.startsWith(SLACK_WEBHOOK_PREFIX))
+    .nullable()
+    .default(null),
+  pilotExpiresAt: z.string().nullable().default(null),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+export type WatchlistWorkspace = z.infer<typeof WatchlistWorkspaceSchema>;
+
+export const CreatePilotWorkspaceSchema = z.object({
+  action: z.literal("create_pilot"),
+  email: z.string().trim().email("Enter a valid work email address").max(254),
+  brandName: z.string().trim().min(1, "Enter your brand or agency name").max(120),
+  slackWebhookUrl: z
+    .string()
+    .trim()
+    .url("Enter a valid Slack Incoming Webhook URL")
+    .refine(
+      (u) => u.startsWith(SLACK_WEBHOOK_PREFIX),
+      `Slack webhook URL must start with ${SLACK_WEBHOOK_PREFIX}`
+    )
+    .optional(),
+});
+
+export const WatchlistItemInputSchema = z.object({
+  adName: z.string().trim().min(1, "Ad name is required").max(160),
+  adCopy: z.string().trim().min(5, "Ad copy must be at least 5 characters").max(5000),
+  landingPageUrl: z
+    .string()
+    .trim()
+    .url("Enter a valid http:// or https:// URL")
+    .refine((u) => /^https?:\/\//i.test(u), "Only http:// and https:// URLs are supported"),
+  dailyBudget: z.number().finite().min(0).max(1_000_000),
+});
+
+export const BillingPortalRequestSchema = z.object({
+  workspaceToken: z.string().trim().min(16).optional(),
+  sessionId: z.string().trim().min(5).optional(),
+});
+export type BillingPortalRequest = z.infer<typeof BillingPortalRequestSchema>;

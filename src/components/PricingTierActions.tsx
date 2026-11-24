@@ -104,30 +104,97 @@ export function PricingGridWithCheckout({
   const [checkoutSuccessPlan, setCheckoutSuccessPlan] = useState<string | null>(
     null
   );
+  const [checkoutSessionId, setCheckoutSessionId] = useState<string | null>(
+    null
+  );
+  const [workspaceToken, setWorkspaceToken] = useState<string | null>(null);
+  const [portalLoading, setPortalLoading] = useState(false);
 
   useEffect(() => {
     const rafId = window.requestAnimationFrame(() => {
       const params = new URLSearchParams(window.location.search);
       if (params.get("checkout") === "success") {
         setCheckoutSuccessPlan(params.get("plan") ?? "selected");
+        const sid = params.get("session_id")?.trim() || null;
+        setCheckoutSessionId(sid);
+        if (sid) {
+          void fetch(`/api/billing/session?session_id=${encodeURIComponent(sid)}`)
+            .then((res) => (res.ok ? res.json() : null))
+            .then((data: { managementToken?: string } | null) => {
+              if (data?.managementToken) {
+                setWorkspaceToken(data.managementToken);
+              }
+            })
+            .catch((err) => {
+              console.warn("[OfferParity] Unable to hydrate billing session:", err);
+            });
+        }
       }
     });
     return () => window.cancelAnimationFrame(rafId);
   }, []);
+
+  async function handleOpenPortal() {
+    if (!workspaceToken && !checkoutSessionId) return;
+    setPortalLoading(true);
+    try {
+      const res = await fetch("/api/billing/portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...(workspaceToken ? { workspaceToken } : {}),
+          ...(checkoutSessionId ? { sessionId: checkoutSessionId } : {}),
+        }),
+      });
+      const data = (await res.json()) as { url?: string };
+      if (res.ok && data.url) {
+        window.location.assign(data.url);
+      }
+    } catch (err) {
+      console.warn("[OfferParity] Billing portal redirect failed:", err);
+    } finally {
+      setPortalLoading(false);
+    }
+  }
 
   return (
     <>
       {checkoutSuccessPlan ? (
         <div
           role="status"
-          className="mx-auto flex max-w-2xl items-center gap-2.5 rounded-2xl border border-[var(--status-pass-border)] bg-[var(--status-pass-bg)] px-4 py-3 text-xs font-medium text-[var(--status-pass-text)]"
+          className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--status-pass-border)] bg-[var(--status-pass-bg)] px-4 py-3 text-xs font-medium text-[var(--status-pass-text)]"
         >
-          <CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden="true" />
-          <span>
-            Subscription confirmed for the{" "}
-            <strong className="uppercase">{checkoutSuccessPlan}</strong> plan!
-            Check your email for your Stripe receipt and onboarding steps.
-          </span>
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <span>
+              Subscription confirmed for the{" "}
+              <strong className="uppercase">{checkoutSuccessPlan}</strong> plan!
+              {workspaceToken
+                ? " Your hourly Slack watchlist workspace is provisioned and ready."
+                : " Check your email for your Stripe receipt and onboarding steps."}
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {workspaceToken ? (
+              <Link
+                href={`/watchlist?token=${encodeURIComponent(workspaceToken)}`}
+                className="inline-flex items-center gap-1.5 rounded-full bg-[var(--accent-primary)] px-3 py-1.5 text-xs font-semibold text-[var(--accent-ink)] hover:bg-[var(--accent-primary-hover)]"
+              >
+                <span>Open Hourly Watchlist</span>
+                <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+              </Link>
+            ) : null}
+            {workspaceToken || checkoutSessionId ? (
+              <button
+                type="button"
+                onClick={handleOpenPortal}
+                disabled={portalLoading}
+                className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--border-strong)] disabled:opacity-60"
+              >
+                <span>{portalLoading ? "Opening..." : "Manage Billing"}</span>
+              </button>
+            ) : null}
+          </div>
         </div>
       ) : null}
 

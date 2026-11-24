@@ -117,6 +117,9 @@ export default function PricingPage() {
             <Link href="/" className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]">
               Free X-Ray
             </Link>
+            <Link href="/watchlist" className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]">
+              Watchlist
+            </Link>
             <Link href="/bot" className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]">
               Bot Allowlist
             </Link>

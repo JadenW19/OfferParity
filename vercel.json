@@ -1,0 +1,15 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "src/app/api/schedules/hourly-audit/route.ts": {
+      "experimentalTriggers": [{ "type": "schedule/v1beta" }],
+      "maxDuration": 60
+    }
+  },
+  "schedules": {
+    "hourly-watchlist-audit": {
+      "schedule": "0 * * * *",
+      "function": "api/schedules/hourly-audit"
+    }
+  }
+}
